@@ -1,0 +1,38 @@
+name: Verify gated evaluation outcomes
+
+on:
+  push:
+    branches: [codex/verify-gated-evaluation-outcomes]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linux-full-suite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: fe30da8cdb88139c106c1b691cb2704cf3d4a4ec
+          persist-credentials: false
+      - name: Record tested feature commit
+        run: git rev-parse HEAD
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27'
+          cache-dependency-path: dashboard/go.sum
+      - name: Install root test dependencies without browser download
+        run: npm install --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Install locked web dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: web
+      - name: Web typecheck
+        run: npm run typecheck
+        working-directory: web
+      - name: Full root suite including dashboard build and web suites
+        run: node test-all.mjs --jobs 4
