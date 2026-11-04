@@ -141,3 +141,18 @@ test('CLI accepts bounded stdin JSON without needing or creating a request file'
     assert.deepEqual(fs.readdirSync(root), []);
   } finally { fs.rmSync(root, { recursive: true, force: true }); }
 });
+
+test('CLI reached through a linked checkout still reads stdin instead of silently succeeding', (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'himalayas-linked-'));
+  try {
+    const link = path.join(root, 'checkout');
+    try { fs.symlinkSync(fileURLToPath(new URL('..', import.meta.url)), link, 'junction'); }
+    catch (error) { return t.skip(`directory symlinks unavailable: ${error.code}`); }
+    const result = spawnSync(process.execPath, [path.join(link, 'himalayas-posting.mjs'), '--request', '-'], {
+      cwd: root, input: JSON.stringify({ url: 'https://example.invalid/unsupported' }), encoding: 'utf8',
+    });
+    assert.equal(result.status, 2);
+    assert.equal(JSON.parse(result.stdout).publisherStatus, 'unknown');
+    assert.deepEqual(fs.readdirSync(root), ['checkout']);
+  } finally { fs.rmSync(root, { recursive: true, force: true }); }
+});

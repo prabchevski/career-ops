@@ -5,8 +5,7 @@
  * Contract: https://himalayas.app/docs/remote-jobs-api#how-do-i-check-a-job-is-still-open
  */
 import fs from 'node:fs/promises';
-import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { isMainModule } from './lib/is-main-module.mjs';
 
 const MAX_BODY = 1024 * 1024;
 const TIMEOUT_MS = 15_000;
@@ -129,6 +128,6 @@ async function main() {
   console.log(JSON.stringify(result));
   process.exitCode = result.publisherStatus === 'unknown' ? 2 : 0;
 }
-if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+if (isMainModule(import.meta.url)) {
   main().catch(() => { console.error('Himalayas retrieval failed: invalid request or unavailable public data.'); process.exitCode = 2; });
 }
