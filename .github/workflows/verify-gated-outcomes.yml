@@ -18,7 +18,7 @@ jobs:
       matrix:
         include:
           - label: gated-outcomes
-            ref: 976a6e2d4858ae2c3c1d93f6295cf3c8099a42de
+            ref: 0cece64caf6dfbd28469d2bcd28b972fcec00dfb
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
