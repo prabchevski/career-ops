@@ -1,4 +1,4 @@
-name: Verify gated evaluation outcomes
+name: Verify geography review corrections
 
 on:
   push:
@@ -9,13 +9,13 @@ permissions:
   contents: read
 
 jobs:
-  linux-full-suite:
+  linux-geography-review:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: fe30da8cdb88139c106c1b691cb2704cf3d4a4ec
+          ref: 502857aa50df99373ac0352f41c38f1a5115a06c
           persist-credentials: false
       - name: Record tested feature commit
         run: git rev-parse HEAD
