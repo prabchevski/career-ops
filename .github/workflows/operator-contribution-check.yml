@@ -1,0 +1,25 @@
+name: Verify independent contribution branches
+on:
+  push:
+    branches: [codex/verify-upstream-fixes]
+permissions:
+  contents: read
+jobs:
+  core:
+    name: Full suite (${{ matrix.branch }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        branch: [codex/fix-cv-reverse-chronology, codex/fix-workplace-geography]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.branch }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Full core and web test inventory
+        run: node test-all.mjs --jobs 4
