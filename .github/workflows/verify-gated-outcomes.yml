@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: 7ca7f6c15c1e13dd45aaff843944189aed8dbe33
+          ref: 445c00fda5dddae3320753eac4e69f4d7345d6f5
           persist-credentials: false
       - name: Record tested feature commit
         run: git rev-parse HEAD
