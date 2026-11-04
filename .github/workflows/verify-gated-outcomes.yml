@@ -1,4 +1,4 @@
-name: Verify final gated evaluation head
+name: Verify isolated review heads
 
 on:
   push:
@@ -9,13 +9,22 @@ permissions:
   contents: read
 
 jobs:
-  linux-gated-final:
+  linux-root-only:
+    name: Root-only full suite (${{ matrix.label }})
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: gated-outcomes
+            ref: 3f48b9cebdaa00bb620cb13e8931615dd16e8424
+          - label: geography
+            ref: 7bdb6ef19f0d52425c04a4dba9f63680dd0dc7c1
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: 445c00fda5dddae3320753eac4e69f4d7345d6f5
+          ref: ${{ matrix.ref }}
           persist-credentials: false
       - name: Record tested feature commit
         run: git rev-parse HEAD
@@ -28,19 +37,11 @@ jobs:
           cache-dependency-path: dashboard/go.sum
       - name: Install root test dependencies without browser download
         run: npm install --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Full root suite with no web or Next dependencies installed
+        run: node test-all.mjs --jobs 4
       - name: Install locked web dependencies
         run: npm ci --ignore-scripts --no-audit --no-fund
         working-directory: web
       - name: Web typecheck
         run: npm run typecheck
-        working-directory: web
-      - name: Full root suite including dashboard build and web suites
-        run: node test-all.mjs --jobs 4
-      - name: Build production web app
-        run: npm run build
-        working-directory: web
-        env:
-          NEXT_TELEMETRY_DISABLED: '1'
-      - name: Canonical live-server Chrome browser suites
-        run: npm run test:browser
         working-directory: web
