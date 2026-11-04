@@ -156,3 +156,22 @@ test('CLI reached through a linked checkout still reads stdin instead of silentl
     assert.deepEqual(fs.readdirSync(root), ['checkout']);
   } finally { fs.rmSync(root, { recursive: true, force: true }); }
 });
+
+test('CLI help is input-independent and refuses unknown combined flags', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'himalayas-help-'));
+  const script = fileURLToPath(new URL('../himalayas-posting.mjs', import.meta.url));
+  try {
+    const run = args => spawnSync(process.execPath, [script, ...args], { cwd: root, input: 'not JSON', encoding: 'utf8' });
+    const long = run(['--help']);
+    const short = run(['-h']);
+    assert.equal(long.status, 0);
+    assert.equal(short.status, 0);
+    assert.match(long.stdout, /^Usage:/);
+    assert.equal(short.stdout, long.stdout);
+    assert.equal(long.stderr + short.stderr, '');
+    const invalid = run(['--help', '--bogus']);
+    assert.equal(invalid.status, 2);
+    assert.equal(invalid.stdout, '');
+    assert.deepEqual(fs.readdirSync(root), []);
+  } finally { fs.rmSync(root, { recursive: true, force: true }); }
+});

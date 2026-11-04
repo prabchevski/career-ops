@@ -107,6 +107,10 @@ export async function retrieveHimalayasPosting(originalUrl, { fetchFn = globalTh
 
 async function main() {
   const args = process.argv.slice(2);
+  if (args.length === 1 && (args[0] === '--help' || args[0] === '-h')) {
+    console.log('Usage: node himalayas-posting.mjs --request <file|->\nRead bounded {"url":"original-posting-url"} JSON from stdin (-) or an existing file.\nOptions:\n  --request <file|->  Read one original posting through the public API\n  --help, -h         Print usage without reading input or making a request');
+    return;
+  }
   if (args.length !== 2 || args[0] !== '--request') throw new Error('Use --request - with JSON on stdin (or an existing request file)');
   let request;
   if (args[1] === '-') {
