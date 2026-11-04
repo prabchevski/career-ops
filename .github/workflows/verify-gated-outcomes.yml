@@ -18,9 +18,7 @@ jobs:
       matrix:
         include:
           - label: gated-outcomes
-            ref: 3f48b9cebdaa00bb620cb13e8931615dd16e8424
-          - label: geography
-            ref: 7bdb6ef19f0d52425c04a4dba9f63680dd0dc7c1
+            ref: 976a6e2d4858ae2c3c1d93f6295cf3c8099a42de
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
