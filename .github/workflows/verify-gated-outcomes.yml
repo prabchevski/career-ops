@@ -1,4 +1,4 @@
-name: Verify geography review corrections
+name: Verify final gated evaluation head
 
 on:
   push:
@@ -9,13 +9,13 @@ permissions:
   contents: read
 
 jobs:
-  linux-geography-review:
+  linux-gated-final:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
-          ref: 502857aa50df99373ac0352f41c38f1a5115a06c
+          ref: 7ca7f6c15c1e13dd45aaff843944189aed8dbe33
           persist-credentials: false
       - name: Record tested feature commit
         run: git rev-parse HEAD
@@ -36,3 +36,11 @@ jobs:
         working-directory: web
       - name: Full root suite including dashboard build and web suites
         run: node test-all.mjs --jobs 4
+      - name: Build production web app
+        run: npm run build
+        working-directory: web
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+      - name: Canonical live-server Chrome browser suites
+        run: npm run test:browser
+        working-directory: web
