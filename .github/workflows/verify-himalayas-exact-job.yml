@@ -1,0 +1,51 @@
+name: Verify Himalayas exact-posting fix
+
+on:
+  push:
+    branches: [codex/verify-himalayas-exact-job]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linux-clean:
+    name: Full clean Linux root and web
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Record exact tested candidate
+        run: git rev-parse HEAD
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27'
+          cache-dependency-path: dashboard/go.sum
+      - name: Install root dependencies only
+        run: npm install --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Full root suite before any web dependencies
+        run: |
+          test ! -d web/node_modules
+          node test-all.mjs --jobs 4
+      - name: Install locked web dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: web
+      - name: Full web suite
+        run: npm test
+        working-directory: web
+      - name: Web typecheck
+        run: npm run typecheck
+        working-directory: web
+      - name: Production web build
+        run: npm run build
+        working-directory: web
+      - name: Confirm tests preserved tracked source
+        run: git diff --exit-code
