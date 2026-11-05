@@ -17,13 +17,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - label: tracker-current-main
-            ref: b98ee3cf2d8e06c81a0c87b407bc6634831b2a1f
+          - label: tracker-report-placeholder
+            ref: 52393fd7502ae5bfd0647036e1472188afd86232
             base: f770ec6f8f429c1132c8e949bf9e00dc1014a9de
-            files: {"merge-tracker.mjs":"7d52a475cc47a744bdd1e47876da20953c9e0f569e180e392719f7c03f86ca8e","tests/merge-tracker-cross-source-identity.test.mjs":"a3073405e0236b7e376c45c955c4f102c1c03e125bace680704afe71b642ab1e","tests/merge-tracker-notes-report-identity.test.mjs":"7c4677aaada5f8f3648e30d80f6a59dd6278deb217a9525cdc28100fda6578e0","tests/merge-tracker-unkeyed-stop.test.mjs":"3d455ed9701e90bc0c845ea01bea64ea2f80e92496a2e53825ad2a9d3e79ff72"}
+            files: {"merge-tracker.mjs":"bcf53d43c49d443271239c98568b235d9b89c4777b6d31606ccaa1dcf8312938","tests/merge-tracker-cross-source-identity.test.mjs":"a3073405e0236b7e376c45c955c4f102c1c03e125bace680704afe71b642ab1e","tests/merge-tracker-notes-report-identity.test.mjs":"5050014214471c2583f11b99cee473546052027ef90a117b65572aa74e2b71fa","tests/merge-tracker-unkeyed-stop.test.mjs":"3d455ed9701e90bc0c845ea01bea64ea2f80e92496a2e53825ad2a9d3e79ff72"}
     env:
       EXPECTED_HEAD: ${{ matrix.ref }}
       EXPECTED_BASE: ${{ matrix.base }}
+      EXPECTED_PARENT: b98ee3cf2d8e06c81a0c87b407bc6634831b2a1f
       EXPECTED_FILES: ${{ toJson(matrix.files) }}
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
       NEXT_TELEMETRY_DISABLED: '1'
@@ -36,10 +37,6 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
         with:
           node-version: '24'
-      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
-        with:
-          go-version: '1.27'
-          cache-dependency-path: dashboard/go.sum
       - name: Install root dependencies without browser download or web dependencies
         run: npm install --ignore-scripts --no-package-lock --no-audit --no-fund
       - name: Verify exact head, code hashes and authoritative native path coverage
@@ -57,6 +54,12 @@ jobs:
           assert.match(base, /^[a-f0-9]{40}$/);
           assert.equal(git('rev-parse', 'HEAD'), head);
           git('merge-base', '--is-ancestor', base, head);
+          const parent = process.env.EXPECTED_PARENT;
+          assert.match(parent, /^[a-f0-9]{40}$/);
+          assert.equal(git('rev-parse', `${head}^`), parent);
+          const incremental = git('diff', '--name-only', parent, head).split('\n').filter(Boolean).sort();
+          assert.deepEqual(incremental, ['merge-tracker.mjs', 'tests/merge-tracker-notes-report-identity.test.mjs'].sort());
+          assert.equal(git('rev-parse', `${head}:web`), git('rev-parse', `${parent}:web`));
           git('diff', '--quiet');
           git('diff', '--cached', '--quiet');
           assert.equal(fs.existsSync('web/node_modules'), false);
@@ -86,31 +89,18 @@ jobs:
           fs.writeFileSync(path.join(process.env.RUNNER_TEMP, 'source-attestation.json'), JSON.stringify({ head, files: actual }));
           console.log(JSON.stringify({ exactHead: head, nativeVerifiedFiles: changed.length, noWebDependencies: true }));
           NODE
-      - name: Record inherited full-root failure and exact new-head verification scope
+      - name: Record parent evidence and targeted-only scope
         run: |
-          echo 'Previous 5f3 FULL ROOT REMAINS FAILED: run 42049218009 job 127320456212, 20289 passed / 1 failed / 26 warnings.'
-          echo 'Its unchanged shell-runner fixture observed duplicate state rows; merge/reconcile/verify were stubs.'
-          echo 'This new merge-main head has focused related regressions and web/type/build verification only; no full-root result is claimed for this head.'
-      - name: Root-only current-main tracker and path regressions
+          echo 'Previous 5f3 full ROOT remains FAILED: run 42049218009, 20289 passed / 1 failed / 26 warnings; it was not repeated.'
+          echo 'Parent b98 has web 2269 passed / 0 failed / 40 optional skips and typecheck/build PASS: run 42060239924. These are parent results.'
+          echo 'This one-line root metadata fix has exact-head targeted verification only. Web source tree equals parent; no new full-root/web/typecheck/build result is claimed.'
+      - name: Exact-head Notes and tracker family before any web dependencies
         run: |
           test ! -d web/node_modules
-          node --test tests/merge-tracker-notes-report-identity.test.mjs tests/walk-tree.test.mjs tests/split-root.test.mjs tests/user-layer-scripts-data-root.test.mjs tests/reconcile-pipeline-url-spelling.test.mjs
+          node --test tests/merge-tracker-notes-report-identity.test.mjs
           node test-all.mjs --only tracker
-          node test-all.mjs --only reserve-report-num.test
-          node test-all.mjs --only openrouter-runner-data-root.test
-      - name: Install locked web dependencies
-        run: npm ci --ignore-scripts --no-audit --no-fund
-        working-directory: web
-      - name: Full web suite
-        run: npm test
-        working-directory: web
-      - name: Web typecheck
-        run: npm run typecheck
-        working-directory: web
-      - name: Production web build
-        run: npm run build
-        working-directory: web
-      - name: Recheck exact head and frozen source bytes after every test and build
+      - name: Retain frozen source proof after targeted checks
+        if: always()
         run: |
           node --input-type=module <<'NODE'
           import assert from 'node:assert/strict';
