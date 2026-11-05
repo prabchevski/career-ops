@@ -82,43 +82,50 @@
     "parentEvidence": "Parent e9 retained66 root-only source checks. This successor changes only the import-safety test convention; failed prior private fullROOT/Go build evidence is retained. Full exact-head root/web/compiled checks remain required."
   },
   "himalayas": {
-    "label": "himalayas-gated-current-main-union",
-    "head": "90044d487fa604c3affacb26ac61dcaa62a4356f",
+    "label": "himalayas-standalone-reader-only",
+    "head": "3d6f3d92450887694511298f3313f9311a49e6dc",
     "base": "325939550333bf9903fe163f32f7903c0d80e92f",
-    "parent": "c9093a466ea04dcc5a148c67eeeba23b37739af6",
-    "second_parent": "325939550333bf9903fe163f32f7903c0d80e92f",
+    "parent": "90044d487fa604c3affacb26ac61dcaa62a4356f",
+    "scope": "helper-only-main-scope",
     "files": {
       "himalayas-posting.mjs": "59abc6dc31a3c4bd44646fb6b6c82ea0f00f01353777f821a5c745b9a322356f",
       "lib/update-manifest.mjs": "c8c791c7efefa002f26ddd75b4393a1fa4919d6023f075368d4442c5f490334a",
-      "modes/oferta.md": "c9e70d7ba4cd9ad60c9a5da2cff18098833a36075902d391852707e96a2432c7",
       "tests/fixtures/himalayas-job.json": "15338b88c0ccb608ea335119aa41472ff98d362cbe7910cd1be7c719454ea7d2",
-      "tests/himalayas-posting.test.mjs": "761f94098fe9092200072955abe87e76beedef2ef8b313eacae1650c858029ea",
-      "web/src/lib/evaluation-access.mjs": "b7df166e256a10ed933640d8e88a6b3d41d9eb02883281ed61a541229a3142e8",
-      "web/src/lib/run-prompts.mjs": "768013fb63e5b44390f71baa097204667f96c4d6b1e21e2778aad32e64871604",
-      "web/tests/lib/evaluation-access.test.mjs": "7e6137a42daa433640a40223685e5beaefade199ed57b7ac9acb58ef8effdf1d"
+      "tests/himalayas-posting.test.mjs": "761f94098fe9092200072955abe87e76beedef2ef8b313eacae1650c858029ea"
     },
-    "scope": "targeted-main-merge",
-    "unchangedFeatureFiles": [
-      "himalayas-posting.mjs",
+    "incremental": [
       "modes/oferta.md",
-      "tests/fixtures/himalayas-job.json",
-      "tests/himalayas-posting.test.mjs",
-      "web/src/lib/evaluation-access.mjs"
-    ],
-    "manualResolutionPaths": [
-      "lib/update-manifest.mjs",
+      "web/src/lib/evaluation-access.mjs",
       "web/src/lib/run-prompts.mjs",
       "web/tests/lib/evaluation-access.test.mjs"
+    ],
+    "helperBytesEqualParent": true,
+    "requireTreesEqualBase": [
+      "web",
+      "modes"
+    ],
+    "requirePackagesEqualBase": [
+      "package.json",
+      "web/package.json",
+      "web/package-lock.json"
     ],
     "registryMainPlus": "himalayas-posting.mjs",
     "focused": [
       "tests/himalayas-posting.test.mjs",
-      "web/tests/lib/evaluation-access.test.mjs",
-      "web/tests/lib/run-prompts.test.mjs",
-      "tests/mode-command-arguments.test.mjs",
-      "tests/evaluation-mode-parity.test.mjs"
+      "tests/main-guard-convention.test.mjs",
+      "tests/help-flag-handled.test.mjs",
+      "tests/update-manifest.test.mjs"
     ],
-    "parentEvidence": "Published3667 earlier originalCI allSUCCESS; prior localc909 focused103/native8. New90044 firstfocused103/native8 only. No new fullROOT/web/type/build result or parent webtree equality is claimed."
+    "parentEvidence": "Owner requested scope split onpublished3667. New3d6f helper-only retains exact4alreadyreviewed bytes, allnon-helperpaths equalmain325, root-only53/native4PASS. Prior900global103 result is historical only; no newfullROOT/web/type/build claim.",
+    "proof": "pr6501-helper-only-final-proof.json",
+    "proofSha256": "714513fff7d0b217484a0294d7dc48bd8a38303305b031fdffdf926b8f363eee",
+    "publicWrites": false,
+    "helperPathsEqualParent": [
+      "himalayas-posting.mjs",
+      "lib/update-manifest.mjs",
+      "tests/fixtures/himalayas-job.json",
+      "tests/himalayas-posting.test.mjs"
+    ]
   },
   "archive": {
     "label": "native-archive-inline-source-reuse",

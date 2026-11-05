@@ -67,6 +67,48 @@ traverse(entryAst, { CallExpression(p) {
 } });
 assert.ok(chunkPaths.length > 0 && chunkPaths.length <= 20);
 assert.equal(new Set(chunkPaths).size, chunkPaths.length);
+// The shipped runtime accepts a leading strict-factory group, then flat ID/factory pairs.
+// Read only actual chunk registrations, never business exports nested in a factory.
+function isChunkRegistration(p) {
+  const statement = p.parentPath, parent = statement?.parentPath;
+  if (!statement?.isExpressionStatement()) return false;
+  if (parent?.isProgram()) return true;
+  if (!parent?.isBlockStatement()) return false;
+  const wrapper = parent.parentPath, call = wrapper?.parentPath;
+  return Boolean((wrapper?.isArrowFunctionExpression() || wrapper?.isFunctionExpression())
+    && !wrapper.node.async && !wrapper.node.generator && wrapper.node.params.length === 0
+    && call?.isCallExpression() && call.node.callee === wrapper.node && call.node.arguments.length === 0
+    && call.parentPath?.isExpressionStatement() && call.parentPath.parentPath?.isProgram());
+}
+function registerCompressedFactories(array, source, chunk, factories, depth = 0) {
+  assert.equal(array.type, 'ArrayExpression', 'unsupported Turbopack registration');
+  let start = 0;
+  if (array.elements[0]?.type === 'ArrayExpression') {
+    assert.equal(depth, 0, 'unsupported nested strict-factory group');
+    registerCompressedFactories(array.elements[0], source, chunk, factories, depth + 1);
+    start = 1;
+  }
+  let ids = [];
+  for (const n of array.elements.slice(start)) {
+    if (n?.type === 'NumericLiteral') { ids.push(n.value); continue; }
+    assert.ok(ids.length && ['ArrowFunctionExpression', 'FunctionExpression'].includes(n?.type));
+    for (const id of ids) {
+      const text = source.slice(n.start, n.end), prior = factories.get(id);
+      if (prior) assert.equal(prior.text, text, `ambiguous factory ${id}`);
+      else factories.set(id, { id, node: n, text, chunk, astPath: null });
+    }
+    ids = [];
+  }
+  assert.equal(ids.length, 0);
+}
+function collectChunkFactories(ast, source, chunk, factories) {
+  traverse(ast, { AssignmentExpression(p) {
+    const { left, right } = p.node;
+    if (left.type !== 'MemberExpression' || left.computed || left.object.name !== 'module' || left.property.name !== 'exports'
+        || !isChunkRegistration(p)) return;
+    registerCompressedFactories(right, source, chunk, factories);
+  } });
+}
 const chunks = [], factories = new Map();
 let totalBytes = 0;
 for (const name of chunkPaths) {
@@ -74,23 +116,7 @@ for (const name of chunkPaths) {
   assert.ok(totalBytes <= 12 * 1024 * 1024, 'chunk inventory exceeds approved bound');
   const source = bytes.toString(), ast = parse(source, { sourceType: 'script' });
   const chunk = { name, source, ast, sha256: sha(bytes) }; chunks.push(chunk);
-  traverse(ast, { AssignmentExpression(p) {
-    const { left, right } = p.node;
-    if (left.type !== 'MemberExpression' || left.computed || left.object.name !== 'module' || left.property.name !== 'exports') return;
-    assert.equal(right.type, 'ArrayExpression', 'unsupported Turbopack registration');
-    let ids = [];
-    for (const n of right.elements) {
-      if (n?.type === 'NumericLiteral') { ids.push(n.value); continue; }
-      assert.ok(ids.length && ['ArrowFunctionExpression', 'FunctionExpression'].includes(n?.type));
-      for (const id of ids) {
-        const text = source.slice(n.start, n.end), prior = factories.get(id);
-        if (prior) assert.equal(prior.text, text, `ambiguous factory ${id}`);
-        else factories.set(id, { id, node: n, text, chunk, astPath: null });
-      }
-      ids = [];
-    }
-    assert.equal(ids.length, 0);
-  } });
+  collectChunkFactories(ast, source, chunk, factories);
 }
 const factoryByNode = new Map([...factories.values()].map(f => [f.node, f]));
 const inside = (candidate, ancestor) => {
@@ -141,7 +167,7 @@ const input1 = property(awaited.argument.arguments[0], 'input'), input2 = proper
 assert.equal(input1?.type, 'Identifier'); assert.equal(input2?.type, 'Identifier');
 assert.equal(resultBinding.path.scope.getBinding(input1.name), promptCall.scope.getBinding(input2.name));
 
-const allowedGlobals = new Set(['undefined', 'Buffer', 'URL', 'JSON', 'String', 'Number', 'Object', 'Array', 'Set', 'Map', 'RegExp', 'Error', 'Promise', 'Math', 'Date', 'process', 'performance', 'setTimeout', 'clearTimeout']);
+const allowedGlobals = new Set(['undefined', 'Buffer', 'URL', 'JSON', 'String', 'Boolean', 'Number', 'Object', 'Array', 'Set', 'Map', 'RegExp', 'Error', 'Promise', 'Math', 'Date', 'process', 'performance', 'setTimeout', 'clearTimeout']);
 const freeBindings = [];
 for (const [label, fn] of [['reader', reader], ['prompt', prompt]]) fn.traverse({ ReferencedIdentifier(p) {
   const binding = p.scope.getBinding(p.node.name);
@@ -172,10 +198,72 @@ const externalKind = f => {
   if (name?.type !== 'StringLiteral' || thunk?.type !== 'ArrowFunctionExpression' || thunk.body.type !== 'CallExpression' || thunk.body.callee.name !== 'require' || thunk.body.arguments[0]?.value !== name.value) return null;
   return name.value;
 };
+// Project requested immutable string DATA from direct exports; never execute another factory.
+function literalNamespaceExport(factory, key, requested) {
+  assert.ok(requested.has(key), 'literal export was not requested by a verified helper');
+  assert.equal(factory?.node.body.type, 'BlockStatement');
+  const contextName = factory.node.params[0]?.name, matches = [];
+  assert.ok(contextName);
+  for (const statement of factory.node.body.body) {
+    const call = statement.type === 'ExpressionStatement' ? statement.expression : null;
+    if (call?.type !== 'CallExpression' || call.callee.type !== 'MemberExpression' || call.callee.computed
+        || call.callee.object.name !== contextName || call.callee.property.name !== 's') continue;
+    assert.equal(call.arguments.length, 1);
+    const values = call.arguments[0]; assert.equal(values.type, 'ArrayExpression');
+    assert.equal(values.elements.length % 3, 0);
+    for (let i = 0; i < values.elements.length; i += 3) {
+      assert.equal(values.elements[i]?.type, 'StringLiteral', 'dynamic export keys are unsupported');
+      if (values.elements[i].value !== key) continue;
+      assert.equal(values.elements[i + 1]?.type, 'NumericLiteral'); assert.equal(values.elements[i + 1].value, 0);
+      assert.equal(values.elements[i + 2]?.type, 'StringLiteral', 'requested export is not literal string data');
+      matches.push(values.elements[i + 2].value);
+    }
+  }
+  assert.equal(matches.length, 1, 'missing or ambiguous literal string export');
+  return matches[0];
+}
+function collectLiteralNamespaceData(functions, selected, factories, skipIds, externalKind) {
+  const requests = new Map(), contextName = selected.node.params[0]?.name;
+  for (const fn of functions) fn.traverse({ MemberExpression(p) {
+    if (p.node.object.type !== 'Identifier') return;
+    const binding = p.scope.getBinding(p.node.object.name), init = binding?.path.node.init;
+    if (binding?.scope !== selected.astPath.scope || init?.type !== 'CallExpression'
+        || init.callee.type !== 'MemberExpression' || init.callee.computed
+        || init.callee.object.name !== contextName || init.callee.property.name !== 'i'
+        || init.arguments.length !== 1 || init.arguments[0].type !== 'NumericLiteral') return;
+    const id = init.arguments[0].value;
+    if (skipIds.has(id) || externalKind(factories.get(id)) === 'node:path') return;
+    assert.equal(p.node.computed, false, 'computed namespace access is not literal data');
+    assert.equal(p.node.property.type, 'Identifier');
+    if (!requests.has(id)) requests.set(id, new Set());
+    requests.get(id).add(p.node.property.name);
+  } });
+  const byModule = new Map(), proof = [];
+  for (const [id, keys] of requests) {
+    const factory = factories.get(id), values = new Map(); assert.ok(factory);
+    for (const key of keys) {
+      const value = literalNamespaceExport(factory, key, keys); values.set(key, value);
+      proof.push({ moduleID: id, exportKey: key, chunk: factory.chunk.name, chunkSha256: factory.chunk.sha256,
+        factorySha256: sha(factory.text), literalSha256: sha(value), literalUtf8Bytes: Buffer.byteLength(value) });
+    }
+    byModule.set(id, values);
+  }
+  return { byModule, proof };
+}
+function immutableLiteralNamespace(entries, denied) {
+  const values = new Map(entries), target = Object.create(null);
+  for (const [key, value] of values) {
+    assert.equal(typeof key, 'string'); assert.equal(typeof value, 'string');
+    Object.defineProperty(target, key, { value, enumerable: true });
+  }
+  Object.freeze(target);
+  return new Proxy(target, { get(_target, key) { return values.has(key) ? values.get(key) : denied(key); } });
+}
 assert.equal(externalKind(factories.get(childID)), 'node:child_process');
+const literalData = collectLiteralNamespaceData([reader, prompt], selected, factories, new Set([childID, profileID]), externalKind);
 const traps = { nativeCalls: 0, fetchCalls: 0, unexpectedImports: 0 };
 const denied = name => (..._args) => { traps.nativeCalls++; throw Error(`native action forbidden: ${name}`); };
-const unused = id => new Proxy(Object.create(null), { get(_o, key) { traps.unexpectedImports++; throw Error(`unapproved dependency access ${id}:${String(key)}`); } });
+const unused = id => immutableLiteralNamespace(literalData.byModule.get(id) ?? [], key => { traps.unexpectedImports++; throw Error(`unapproved dependency access ${id}:${String(key)}`); });
 const childNamespace = Object.freeze(Object.fromEntries(['spawn', 'exec', 'execFile', 'fork', 'spawnSync', 'execSync', 'execFileSync'].map(k => [k, denied(k)])));
 const globals = {
   Buffer, URL, performance, setTimeout, clearTimeout,
@@ -312,7 +400,7 @@ const proof = { schema: 1, status: 'passed', variant, scope: 'actual-emitted-hel
   entry: { path: 'server/app/api/run/route.js', sha256: sha(entry) }, chunks: chunks.map(c => ({ path: c.name, sha256: c.sha256 })),
   selectedFactory: selected.id, originalFactorySha256: sha(selected.text), instrumentedFactorySha256: sha(instrumented), readerName: reader.node.id.name,
   promptExpressionSha256: sha(promptText), noPostLocalCaptures: true, routeEvidenceDataflowProvedStatically: true,
-  freeBindings: [...new Set(freeBindings)].sort(), cases, adapterChecks: commands, traps,
+  freeBindings: [...new Set(freeBindings)].sort(), literalDependencyData: literalData.proof, cases, adapterChecks: commands, traps,
   executionBounds: { initialSyncCallVmTimeoutMs: 1000, readerAwaitDeadlineMs: 3000, everyAsyncCallbackVmTimed: false, requiredOuterOsHardDeadlineSeconds: 45, outerDeadlineAttestedByThisProof: false },
   generatedCommandsExecuted: false, modelCalls: 0, httpCalls: 0 };
 assert.ok(!fs.existsSync(proofFile), 'proof output collision');

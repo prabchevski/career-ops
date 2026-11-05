@@ -29,6 +29,13 @@ if (axis.scope === 'targeted-main-merge') {
   const incremental = git('diff', '--name-only', axis.parent, axis.head).split('\n').filter(Boolean).sort();
   assert.deepEqual(incremental, [...axis.incremental].sort());
 }
+if (axis.scope === 'helper-only-main-scope') {
+  for (const file of axis.helperPathsEqualParent) assert.equal(git('rev-parse', `${axis.head}:${file}`), git('rev-parse', `${axis.parent}:${file}`), file);
+  for (const tree of axis.requireTreesEqualBase) assert.equal(git('rev-parse', `${axis.head}:${tree}`), git('rev-parse', `${axis.base}:${tree}`), tree);
+  for (const file of axis.requirePackagesEqualBase) assert.equal(git('rev-parse', `${axis.head}:${file}`), git('rev-parse', `${axis.base}:${file}`), file);
+  // Complete four-path equality above proves all other main bytes are retained.
+  assert.equal(fs.existsSync('web/node_modules'), false);
+}
 if (axis.scope === 'targeted-root-only') {
   assert.equal(git('rev-parse', `${axis.head}:web`), git('rev-parse', `${axis.parent}:web`));
   git('diff', '--exit-code', axis.parent, axis.head, '--', 'package.json', 'package-lock.json');

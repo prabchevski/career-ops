@@ -1,0 +1,124 @@
+name: Public full-root gates and compiled continuation
+on:
+  push:
+    branches: [codex/verify-public-source-compiled-20261105]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  review-roots:
+    name: First full root (${{ matrix.axis }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - axis: geo
+            ref: 5743a3221dd3a4b4045de95acb087d90b5e7ecaa
+          - axis: tracker
+            ref: b21da5ebfe6776d84635de18faa95f301ec24b13
+          - axis: archive
+            ref: 7284d68e7a72108b1f974ec42804a71bb2481a08
+          - axis: himalayas
+            ref: 3d6f3d92450887694511298f3313f9311a49e6dc
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Preserve exact verification tools outside the contribution
+        run: cp -a .github/verification "$RUNNER_TEMP/root-verification"
+      - name: Check out the exact contribution for its first full root gate
+        id: source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ matrix.ref }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - name: Install declared root dependencies only
+        run: npm install --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Pin every contribution hash and native path before the full suite
+        run: node "$RUNNER_TEMP/root-verification/attest-source.mjs" before '${{ matrix.axis }}' "$RUNNER_TEMP/root-verification/axes.json" "$RUNNER_TEMP/root-source-attestation.json"
+      - name: First complete root suite on this exact head, serial supported mode
+        run: |
+          test ! -d web/node_modules
+          echo 'CONTRIBUTING requires full test-all; --only is not a PR gate. This is the first full root at this exact head. --jobs 1 uses the documented serial mode; no tests are selected out.'
+          node test-all.mjs --jobs 1
+      - name: Native source readback even when the full root suite fails
+        if: always() && steps.source.outcome == 'success'
+        run: node "$RUNNER_TEMP/root-verification/attest-source.mjs" after '${{ matrix.axis }}' "$RUNNER_TEMP/root-verification/axes.json" "$RUNNER_TEMP/root-source-attestation.json"
+      - name: Retain exact root-source attestation without changing failures
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: first-full-root-${{ matrix.axis }}-${{ github.sha }}
+          path: ${{ runner.temp }}/root-source-attestation.json
+          if-no-files-found: error
+
+  compiled-only:
+    name: Source17e fresh build and actual compiled functions only
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Preserve exact verification-only tools
+        run: |
+          cp -a .github/verification "$RUNNER_TEMP/compiled-verification"
+          echo "5ce00b1c0eda0a19f57783f13746e7dc0435d257a1da0e902dc6b6aad2cfe435  $RUNNER_TEMP/compiled-verification/compiled-workday-proof.mjs" | sha256sum --check
+      - name: Verify parent actual product gates and retain its original FAILURE
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 "$RUNNER_TEMP/compiled-verification/verify-source-parent.py" --axes "$RUNNER_TEMP/compiled-verification/axes.json" --proof "$RUNNER_TEMP/compiled-parent-proof.json"
+      - name: Check out the unchanged exact public source
+        id: source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 17e65cbeff8b6367518de97863b74381cb826941
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - name: Install declared root dependencies only
+        run: npm install --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Re-attest exact source17e and complete native16 inventory before build
+        run: node "$RUNNER_TEMP/compiled-verification/attest-source.mjs" before workday "$RUNNER_TEMP/compiled-verification/axes.json" "$RUNNER_TEMP/compiled-source-attestation.json"
+      - name: Install locked web build dependencies
+        working-directory: web
+        run: npm ci --no-audit --no-fund
+      - name: Fresh production build without repeating green suites
+        id: build
+        working-directory: web
+        run: npm run build
+      - name: Execute actual emitted helper and adapter functions
+        id: compiled
+        timeout-minutes: 2
+        run: timeout --signal=TERM --kill-after=5s 45s node "$RUNNER_TEMP/compiled-verification/compiled-workday-proof.mjs" --root "$GITHUB_WORKSPACE" --attestation "$RUNNER_TEMP/compiled-source-attestation.json" --proof "$RUNNER_TEMP/compiled-source-proof.json" --variant public
+      - name: Retain bounded generated public code when the compiled probe fails
+        if: failure() && steps.build.outcome == 'success' && steps.compiled.outcome == 'failure'
+        run: node "$RUNNER_TEMP/compiled-verification/capture-compiled-failure.mjs" --root "$GITHUB_WORKSPACE" --attestation "$RUNNER_TEMP/compiled-source-attestation.json" --out "$RUNNER_TEMP/compiled-source-failure-code"
+      - name: Source readback even after a failed compiled probe
+        if: always() && steps.source.outcome == 'success'
+        run: node "$RUNNER_TEMP/compiled-verification/attest-source.mjs" after workday "$RUNNER_TEMP/compiled-verification/axes.json" "$RUNNER_TEMP/compiled-source-attestation.json"
+      - name: Retain exact proof and honest parent failure without rerunning other axes
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: public-source-compiled-only-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/compiled-parent-proof.json
+            ${{ runner.temp }}/compiled-source-attestation.json
+            ${{ runner.temp }}/compiled-source-proof.json
+            ${{ runner.temp }}/compiled-source-failure-code/
+          if-no-files-found: error

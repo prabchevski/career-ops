@@ -1,8 +1,6 @@
 name: Verify isolated Workday and review follow-ups
 
 on:
-  push:
-    branches: [codex/verify-workday-geo-tracker-20261105]
   workflow_dispatch:
 
 permissions:
