@@ -18,9 +18,13 @@ jobs:
       matrix:
         include:
           - label: known-ats-prefetch
-            ref: f47009af5a4e77509eb7bdb8e81a90c2694d0659
+            ref: d12c0bf088f27191a47f7c7f4b364a940c815cf1
             base: 05ceb992d25c7870fc89823c88e75fcb7464b135
-            files: {"lib/update-manifest.mjs":"44c28bd0c0435b57641ac2c32f45840d4fbf14573dfd853069d99777065e6790","modes/oferta.md":"b2fd4f2b5c75a647ffae31c75e6492b0781d4bd040ac301a29a3255f3439b0d2","read-known-jd.mjs":"500fb8d2c88c7e20ce788e586e09452c2d8a335aa07fbaf8d2f626e3afc9d7d1","tests/read-known-jd.test.mjs":"30ed1a383a50cd68fa0c82040415a6cea3e393e5a4d590f90463f41767e93db5","web/src/app/api/run/route.ts":"f8072f85a441e4c3fd8ca7303342dc008d263da24d59a54aeed302b66465318f","web/src/lib/evaluation-source.mjs":"173a7e718fc66f893ec00a1eaa2681d3900570b3519bacff3e5a48b727820cfb","web/src/lib/run-prompts.mjs":"fc9194cfa37938eb5276e96fbc532953ab516eba783bfbd58437560d724eddaf","web/tests/lib/evaluation-source-route.test.mjs":"c4fac7ce80e7cd7c05d836d6c085f79e0cae7ebaf645b58756c7ebcc3f10cd3c","web/tests/lib/evaluation-source.test.mjs":"e3f29b9d8b5395500f795209993b412b45d47d366f87b109a19f9b68de21cc97","web/tests/lib/run-prompts.test.mjs":"c6c090436e71fadac2e37eff976b1c6ad96cfffa044433a60dd01c3b20a9bdf9"}
+            files: {"lib/update-manifest.mjs":"44c28bd0c0435b57641ac2c32f45840d4fbf14573dfd853069d99777065e6790","modes/oferta.md":"b2fd4f2b5c75a647ffae31c75e6492b0781d4bd040ac301a29a3255f3439b0d2","read-known-jd.mjs":"500fb8d2c88c7e20ce788e586e09452c2d8a335aa07fbaf8d2f626e3afc9d7d1","tests/read-known-jd.test.mjs":"30ed1a383a50cd68fa0c82040415a6cea3e393e5a4d590f90463f41767e93db5","web/src/app/api/run/route.ts":"f8072f85a441e4c3fd8ca7303342dc008d263da24d59a54aeed302b66465318f","web/src/lib/evaluation-source.mjs":"173a7e718fc66f893ec00a1eaa2681d3900570b3519bacff3e5a48b727820cfb","web/src/lib/run-prompts.mjs":"fc9194cfa37938eb5276e96fbc532953ab516eba783bfbd58437560d724eddaf","web/src/lib/spawn-cli.mjs":"7026d66705a735e920d190c3004eb98f08569e36c783fa8f93fdcf08255e5a4b","web/tests/lib/evaluation-source-route.test.mjs":"c4fac7ce80e7cd7c05d836d6c085f79e0cae7ebaf645b58756c7ebcc3f10cd3c","web/tests/lib/evaluation-source.test.mjs":"8bcde96cd07a869ab1d4a6bb9dde6de0dab77ec98f760a315543d0cac9e06fbb","web/tests/lib/run-prompts.test.mjs":"c6c090436e71fadac2e37eff976b1c6ad96cfffa044433a60dd01c3b20a9bdf9","web/tests/lib/spawn-cli.test.mjs":"328a04703cf07457a32d14fd4b0c9b901dd9302a53df81c7d1b41dedd1fbc283"}
+          - label: tracker-notes-report-identity
+            ref: 18ff2c08dd7bfa82a2bd78b1feb3505a9253947e
+            base: 35b7c5315837478ae35316429669a954923ccd6b
+            files: {"merge-tracker.mjs":"c728fe3ac313ae268cfc9f9be9f7cd03e4a9c6dafae77784531cdaa4dc809381","tests/merge-tracker-cross-source-identity.test.mjs":"c40354c2c00c908cc400c5416607e7c48b3794c4de64fca3c321e069d17f1357","tests/merge-tracker-notes-report-identity.test.mjs":"e324326292db916807e02dad9c2414722565e7487f769b55e10b1f124bad10b2","tests/merge-tracker-unkeyed-stop.test.mjs":"3d455ed9701e90bc0c845ea01bea64ea2f80e92496a2e53825ad2a9d3e79ff72"}
     env:
       EXPECTED_HEAD: ${{ matrix.ref }}
       EXPECTED_BASE: ${{ matrix.base }}
@@ -86,15 +90,10 @@ jobs:
           fs.writeFileSync(path.join(process.env.RUNNER_TEMP, 'source-attestation.json'), JSON.stringify({ head, files: actual }));
           console.log(JSON.stringify({ exactHead: head, nativeVerifiedFiles: changed.length, noWebDependencies: true }));
           NODE
-      - name: Record the existing full root suite disposition
-        run: |
-          node --input-type=module <<'NODE'
-          console.log(JSON.stringify({ fullRootSuite: "FAILED_PREVIOUSLY_NOT_RERUN", run: 42032749776, job: 127263029122, sourceHead: process.env.EXPECTED_HEAD, passed: 20293, failed: 1, test: "tests/batch-runner-throttle-before-launch.test.mjs", observed: "Unmodified fixture reserve-report-num stub returned no valid number for offer 3; suite threw before assertions", downstreamOnly: true }));
-          NODE
-      - name: Root-only focused source-reader and evaluation regressions
+      - name: Full root suite in the root-only dependency environment
         run: |
           test ! -d web/node_modules
-          node --test tests/read-known-jd.test.mjs tests/main-guard-convention.test.mjs tests/help-flag-handled.test.mjs tests/update-manifest.test.mjs web/tests/lib/evaluation-source.test.mjs web/tests/lib/evaluation-source-route.test.mjs web/tests/lib/run-prompts.test.mjs web/tests/lib/codex-evaluate-lifecycle.test.mjs web/tests/lib/report-persist.test.mjs web/tests/lib/evaluation-options.test.mjs
+          node test-all.mjs --jobs 4
       - name: Install locked web dependencies
         run: npm ci --ignore-scripts --no-audit --no-fund
         working-directory: web
@@ -129,6 +128,7 @@ jobs:
                       snippets.append({'marker': marker, 'context': text[max(0, position - 600):position + 1000]})
                       start = position + len(marker)
               found.append({'path': str(file), 'sha256': hashlib.sha256(file.read_bytes()).hexdigest(), 'snippets': snippets})
+          assert found and all(item['snippets'] for item in found), 'Compiled adapter evidence missing'
           print(json.dumps({'compiled_adapter_evidence': found}))
           PY
       - name: Recheck exact head and frozen source bytes after every test and build
