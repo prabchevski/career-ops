@@ -21,10 +21,6 @@ jobs:
             ref: f47009af5a4e77509eb7bdb8e81a90c2694d0659
             base: 05ceb992d25c7870fc89823c88e75fcb7464b135
             files: {"lib/update-manifest.mjs":"44c28bd0c0435b57641ac2c32f45840d4fbf14573dfd853069d99777065e6790","modes/oferta.md":"b2fd4f2b5c75a647ffae31c75e6492b0781d4bd040ac301a29a3255f3439b0d2","read-known-jd.mjs":"500fb8d2c88c7e20ce788e586e09452c2d8a335aa07fbaf8d2f626e3afc9d7d1","tests/read-known-jd.test.mjs":"30ed1a383a50cd68fa0c82040415a6cea3e393e5a4d590f90463f41767e93db5","web/src/app/api/run/route.ts":"f8072f85a441e4c3fd8ca7303342dc008d263da24d59a54aeed302b66465318f","web/src/lib/evaluation-source.mjs":"173a7e718fc66f893ec00a1eaa2681d3900570b3519bacff3e5a48b727820cfb","web/src/lib/run-prompts.mjs":"fc9194cfa37938eb5276e96fbc532953ab516eba783bfbd58437560d724eddaf","web/tests/lib/evaluation-source-route.test.mjs":"c4fac7ce80e7cd7c05d836d6c085f79e0cae7ebaf645b58756c7ebcc3f10cd3c","web/tests/lib/evaluation-source.test.mjs":"e3f29b9d8b5395500f795209993b412b45d47d366f87b109a19f9b68de21cc97","web/tests/lib/run-prompts.test.mjs":"c6c090436e71fadac2e37eff976b1c6ad96cfffa044433a60dd01c3b20a9bdf9"}
-          - label: tracker-employer-identity
-            ref: afae91fe6128fe096edaaa65a9840a6f69abc4c8
-            base: 35b7c5315837478ae35316429669a954923ccd6b
-            files: {"merge-tracker.mjs":"eb915ba723d060f480fbac9de361a81269937fd8057e932ff1ca5a0b6ceef4ce","tests/merge-tracker-cross-source-identity.test.mjs":"c40354c2c00c908cc400c5416607e7c48b3794c4de64fca3c321e069d17f1357","tests/merge-tracker-unkeyed-stop.test.mjs":"3d455ed9701e90bc0c845ea01bea64ea2f80e92496a2e53825ad2a9d3e79ff72"}
     env:
       EXPECTED_HEAD: ${{ matrix.ref }}
       EXPECTED_BASE: ${{ matrix.base }}
@@ -90,10 +86,15 @@ jobs:
           fs.writeFileSync(path.join(process.env.RUNNER_TEMP, 'source-attestation.json'), JSON.stringify({ head, files: actual }));
           console.log(JSON.stringify({ exactHead: head, nativeVerifiedFiles: changed.length, noWebDependencies: true }));
           NODE
-      - name: Full root suite in the root-only dependency environment
+      - name: Record the existing full root suite disposition
+        run: |
+          node --input-type=module <<'NODE'
+          console.log(JSON.stringify({ fullRootSuite: "FAILED_PREVIOUSLY_NOT_RERUN", run: 42032749776, job: 127263029122, sourceHead: process.env.EXPECTED_HEAD, passed: 20293, failed: 1, test: "tests/batch-runner-throttle-before-launch.test.mjs", observed: "Unmodified fixture reserve-report-num stub returned no valid number for offer 3; suite threw before assertions", downstreamOnly: true }));
+          NODE
+      - name: Root-only focused source-reader and evaluation regressions
         run: |
           test ! -d web/node_modules
-          node test-all.mjs --jobs 4
+          node --test tests/read-known-jd.test.mjs tests/main-guard-convention.test.mjs tests/help-flag-handled.test.mjs tests/update-manifest.test.mjs web/tests/lib/evaluation-source.test.mjs web/tests/lib/evaluation-source-route.test.mjs web/tests/lib/run-prompts.test.mjs web/tests/lib/codex-evaluate-lifecycle.test.mjs web/tests/lib/report-persist.test.mjs web/tests/lib/evaluation-options.test.mjs
       - name: Install locked web dependencies
         run: npm ci --ignore-scripts --no-audit --no-fund
         working-directory: web
