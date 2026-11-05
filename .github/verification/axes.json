@@ -47,14 +47,20 @@
     "parentEvidence": "Published parent523 original19 checks SUCCESS. Previous5f3 fullROOT20289/1 remains FAILED and was not repeated. No new-head fullROOT/web/type/build claim."
   },
   "workday": {
-    "head": "176d63d9eaef73b953ddb0c7dba3279d35aa9f89",
+    "head": "86eea1d8695816d0ecddfbe2ddf92cd1a3b9c809",
     "base": "cd3793734fcd57693ddd97a20ccf0d3298b7d47e",
-    "parent": "17e65cbeff8b6367518de97863b74381cb826941",
+    "parent": "176d63d9eaef73b953ddb0c7dba3279d35aa9f89",
+    "scope": "source-main-merge-parity",
+    "mergeParent": "176d63d9eaef73b953ddb0c7dba3279d35aa9f89",
+    "originalFeatureParent": "17e65cbeff8b6367518de97863b74381cb826941",
     "second_parent": "cd3793734fcd57693ddd97a20ccf0d3298b7d47e",
     "automaticMergeTree": "0a2d63c5a16ffe66916f743f94f39da3d8e6eb4f",
-    "scope": "source-main-merge",
     "manualResolutionPaths": [
-      "web/tests/lib/evaluation-source-route.test.mjs"
+      "web/tests/lib/evaluation-source-route.test.mjs",
+      "web/tests/lib/evaluation-source.test.mjs"
+    ],
+    "incremental": [
+      "web/tests/lib/evaluation-source.test.mjs"
     ],
     "files": {
       "browser-extract.mjs": "d62db9f495766fda2e153b4e602dadb5a54deedaf8d96e33135ed4adbe046c30",
@@ -69,7 +75,7 @@
       "web/src/lib/run-prompts.mjs": "48f8243bb1a28e2872aa4cf328da7159609a45c95447b235f7ffbc6bff1996f1",
       "web/src/lib/spawn-cli.mjs": "7026d66705a735e920d190c3004eb98f08569e36c783fa8f93fdcf08255e5a4b",
       "web/tests/lib/evaluation-source-route.test.mjs": "e67f5c3424f2a43219c95fc46c4412cbabbd7bf11ff4d73c162a57c99e823d1e",
-      "web/tests/lib/evaluation-source.test.mjs": "5d744f2889fdee33aef81b37006056d2d59efcd4ee4962d64b844679f75643f1",
+      "web/tests/lib/evaluation-source.test.mjs": "86afd09b83872e950d7218d92341c9ad87cbccf48c5af248e6dea8dd11f09fae",
       "web/tests/lib/report-persist.test.mjs": "9ea2f53024de7138ab7adc633d608f1be4aebce3cb12b3cf1c8fc8a29972f6a1",
       "web/tests/lib/run-prompts.test.mjs": "c6c090436e71fadac2e37eff976b1c6ad96cfffa044433a60dd01c3b20a9bdf9",
       "web/tests/lib/spawn-cli.test.mjs": "328a04703cf07457a32d14fd4b0c9b901dd9302a53df81c7d1b41dedd1fbc283"

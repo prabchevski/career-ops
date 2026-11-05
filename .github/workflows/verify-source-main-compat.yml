@@ -1,7 +1,6 @@
 name: Verify Source current-main event contract
 on:
-  push:
-    branches: [codex/verify-source-main-compat-20261105]
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

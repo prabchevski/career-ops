@@ -19,7 +19,16 @@ assert.equal(git('rev-parse', `${axis.head}^`), axis.parent);
 git('diff', '--quiet'); git('diff', '--cached', '--quiet');
 const changed = git('diff', '--name-only', axis.base, axis.head).split('\n').filter(Boolean).sort();
 assert.deepEqual(changed, Object.keys(axis.files).sort());
-if (axis.scope === 'source-main-merge') {
+if (axis.scope === 'source-main-merge-parity') {
+  assert.equal(axis.mergeParent, axis.parent);
+  assert.equal(git('rev-parse', `${axis.mergeParent}^`), axis.originalFeatureParent);
+  assert.equal(git('rev-parse', `${axis.mergeParent}^2`), axis.second_parent);
+  assert.equal(axis.second_parent, axis.base);
+  assert.deepEqual(git('diff', '--name-only', axis.parent, axis.head).split('\n').filter(Boolean).sort(), [...axis.incremental].sort());
+  const automatic = git('merge-tree', '--write-tree', '--name-only', axis.originalFeatureParent, axis.second_parent).split('\n')[0];
+  assert.equal(automatic, axis.automaticMergeTree);
+  assert.deepEqual(git('diff', '--name-only', automatic, axis.head).split('\n').filter(Boolean).sort(), [...axis.manualResolutionPaths].sort());
+} else if (axis.scope === 'source-main-merge') {
   assert.equal(git('rev-parse', `${axis.head}^2`), axis.second_parent);
   assert.equal(axis.second_parent, axis.base);
   // This unreferenced tree is reproduced from the two published parents;
