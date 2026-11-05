@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - label: tracker-notes-report-identity
+          - label: tracker-notes-downstream
             ref: 5f3ce811ced85d518bdd9f5de43a2a9b589fbc1c
             base: 35b7c5315837478ae35316429669a954923ccd6b
             files: {"merge-tracker.mjs":"c728fe3ac313ae268cfc9f9be9f7cd03e4a9c6dafae77784531cdaa4dc809381","tests/merge-tracker-cross-source-identity.test.mjs":"c40354c2c00c908cc400c5416607e7c48b3794c4de64fca3c321e069d17f1357","tests/merge-tracker-notes-report-identity.test.mjs":"7c4677aaada5f8f3648e30d80f6a59dd6278deb217a9525cdc28100fda6578e0","tests/merge-tracker-unkeyed-stop.test.mjs":"3d455ed9701e90bc0c845ea01bea64ea2f80e92496a2e53825ad2a9d3e79ff72"}
@@ -86,10 +86,16 @@ jobs:
           fs.writeFileSync(path.join(process.env.RUNNER_TEMP, 'source-attestation.json'), JSON.stringify({ head, files: actual }));
           console.log(JSON.stringify({ exactHead: head, nativeVerifiedFiles: changed.length, noWebDependencies: true }));
           NODE
-      - name: Full root suite in the root-only dependency environment
+      - name: Record retained full-root failure without repeating it
+        run: |
+          echo 'FULL ROOT REMAINS FAILED: run 42049218009 job 127320456212, 20289 passed / 1 failed / 26 warnings.'
+          echo 'Unchanged tests/batch-runner-state-empty-cell.test.mjs observed duplicate state rows; its merge/reconcile/verify scripts are stubs.'
+          echo 'This downstream continuation verifies focused tracker/walker and previously unexecuted web/build stages; it does not turn that root result green.'
+      - name: Root-only tracker and walker regressions
         run: |
           test ! -d web/node_modules
-          node test-all.mjs --jobs 4
+          node test-all.mjs --only tracker
+          node --test tests/walk-tree.test.mjs
       - name: Install locked web dependencies
         run: npm ci --ignore-scripts --no-audit --no-fund
         working-directory: web
