@@ -1,0 +1,192 @@
+name: Verify isolated Workday and review follow-ups
+
+on:
+  push:
+    branches: [codex/verify-workday-geo-tracker-20261105]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exact-head:
+    name: Exact source (${{ matrix.axis }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - axis: geo
+            ref: 5743a3221dd3a4b4045de95acb087d90b5e7ecaa
+          - axis: tracker
+            ref: b21da5ebfe6776d84635de18faa95f301ec24b13
+          - axis: himalayas
+            ref: 90044d487fa604c3affacb26ac61dcaa62a4356f
+          - axis: archive
+            ref: 7284d68e7a72108b1f974ec42804a71bb2481a08
+          - axis: workday
+            ref: 17e65cbeff8b6367518de97863b74381cb826941
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - name: Read this immutable verification workflow
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Preserve verification-only tools outside the source checkout
+        run: cp -a .github/verification "$RUNNER_TEMP/review-verification"
+      - name: Check out exact contribution source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ matrix.ref }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - name: Install only root dependencies
+        run: npm install --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Attest head, all PR source hashes, native inventory and incremental scope
+        run: node "$RUNNER_TEMP/review-verification/attest-source.mjs" before '${{ matrix.axis }}' "$RUNNER_TEMP/review-verification/axes.json" "$RUNNER_TEMP/source-attestation.json"
+      - name: Geo exact-head root-only family
+        if: matrix.axis == 'geo'
+        run: |
+          test ! -d web/node_modules
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { spawnSync } from 'node:child_process';
+          const { geo } = JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/review-verification/axes.json`, 'utf8'));
+          console.log(geo.parentEvidence);
+          const result = spawnSync(process.execPath, ['--test', '--test-concurrency=4', ...geo.focused], { stdio: 'inherit', shell: false });
+          if (result.error) throw result.error;
+          if (result.signal) throw Error(`Targeted tests interrupted: ${result.signal}`);
+          process.exitCode = result.status;
+          NODE
+      - name: Tracker exact-head Notes and canonical family before web dependencies
+        if: matrix.axis == 'tracker'
+        run: |
+          test ! -d web/node_modules
+          echo 'Targeted-only successor; parent523 original19 checks SUCCESS. Earlier5f3 fullROOT failure is retained. No new-head fullROOT/web/type/build claim.'
+          node --test tests/merge-tracker-notes-report-identity.test.mjs
+          node test-all.mjs --only tracker
+      - name: Workday source and actual route contract before web dependencies
+        if: matrix.axis == 'workday'
+        run: |
+          test ! -d web/node_modules
+          node --test --test-concurrency=1 tests/browser-extract.test.mjs tests/read-known-jd.test.mjs web/tests/lib/evaluation-source.test.mjs web/tests/lib/evaluation-source-route.test.mjs
+      - name: Archive exact-head root-only families
+        if: matrix.axis == 'archive'
+        run: |
+          test ! -d web/node_modules
+          echo 'Targeted native archive verification only. No new fullROOT/web/type/build claim; prior fixture guard-count failure retained.'
+          node --test --test-concurrency=1 tests/evaluation-archive.test.mjs tests/persist-evaluation-report.test.mjs
+      - name: Himalayas current-main merge targeted checks
+        if: matrix.axis == 'himalayas'
+        run: |
+          echo 'Targeted main-merge proof only: all outside8PR bytes equal officialmain325; other5 feature bytes equalc909. Actualprompt preserves merged gateprotocol and exactpublisher access. No new fullROOT/web/type/build or parentwebtree equality is claimed.'
+          node --test --test-concurrency=1 tests/himalayas-posting.test.mjs web/tests/lib/evaluation-access.test.mjs web/tests/lib/run-prompts.test.mjs tests/mode-command-arguments.test.mjs tests/evaluation-mode-parity.test.mjs
+      - name: Workday full root suite once before web dependencies
+        if: matrix.axis == 'workday'
+        run: |
+          test ! -d web/node_modules
+          node test-all.mjs --jobs 4
+      - name: Install locked web dependencies
+        if: matrix.axis == 'workday'
+        working-directory: web
+        run: npm ci --no-audit --no-fund
+      - name: Workday full web tests
+        if: matrix.axis == 'workday'
+        working-directory: web
+        run: npm test
+      - name: Workday typecheck
+        if: matrix.axis == 'workday'
+        working-directory: web
+        run: npm run typecheck
+      - name: Workday production build
+        if: matrix.axis == 'workday'
+        working-directory: web
+        run: npm run build
+      - name: Execute exact emitted helper and adapter functions with fictional data
+        if: matrix.axis == 'workday'
+        timeout-minutes: 2
+        run: timeout --signal=TERM --kill-after=5s 45s node "$RUNNER_TEMP/review-verification/compiled-workday-proof.mjs" --root "$GITHUB_WORKSPACE" --attestation "$RUNNER_TEMP/source-attestation.json" --proof "$RUNNER_TEMP/compiled-workday-proof.json" --variant public
+      - name: Re-attest immutable source after checks, including on failure
+        if: always()
+        run: node "$RUNNER_TEMP/review-verification/attest-source.mjs" after '${{ matrix.axis }}' "$RUNNER_TEMP/review-verification/axes.json" "$RUNNER_TEMP/source-attestation.json"
+      - name: Retain exact evidence without changing failed results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: exact-source-${{ matrix.axis }}-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/source-attestation.json
+            ${{ runner.temp }}/compiled-workday-proof.json
+          if-no-files-found: error
+
+  source-archive-runtime:
+    name: Real native interop (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22.13.0', '24']
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Preserve verification-only tools
+        run: cp -a .github/verification "$RUNNER_TEMP/review-verification"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 17e65cbeff8b6367518de97863b74381cb826941
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 7284d68e7a72108b1f974ec42804a71bb2481a08
+          path: archive
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install only declared root dependencies in both exact checkouts
+        run: |
+          npm --prefix source install --ignore-scripts --no-package-lock --no-audit --no-fund
+          npm --prefix archive install --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Attest complete source16 inventory before runtime work
+        working-directory: source
+        run: node "$RUNNER_TEMP/review-verification/attest-source.mjs" before workday "$RUNNER_TEMP/review-verification/axes.json" "$RUNNER_TEMP/runtime-source-attestation.json"
+      - name: Attest complete archive11 inventory before runtime work
+        working-directory: archive
+        run: node "$RUNNER_TEMP/review-verification/attest-source.mjs" before archive "$RUNNER_TEMP/review-verification/axes.json" "$RUNNER_TEMP/runtime-archive-attestation.json"
+      - name: Actual require/import, fixed CLI and complete inline archive interop
+        timeout-minutes: 3
+        run: |
+          mkdir "$RUNNER_TEMP/native-interop-scratch"
+          timeout --signal=TERM --kill-after=5s 90s node "$RUNNER_TEMP/review-verification/runtime-source-archive-composition.mjs" --source "$GITHUB_WORKSPACE/source" --archive "$GITHUB_WORKSPACE/archive" --scratch "$RUNNER_TEMP/native-interop-scratch" --proof "$RUNNER_TEMP/native-runtime-proof.json"
+      - name: Retain source16 readback even on failure
+        if: always()
+        working-directory: source
+        run: node "$RUNNER_TEMP/review-verification/attest-source.mjs" after workday "$RUNNER_TEMP/review-verification/axes.json" "$RUNNER_TEMP/runtime-source-attestation.json"
+      - name: Retain archive11 readback even on failure
+        if: always()
+        working-directory: archive
+        run: node "$RUNNER_TEMP/review-verification/attest-source.mjs" after archive "$RUNNER_TEMP/review-verification/axes.json" "$RUNNER_TEMP/runtime-archive-attestation.json"
+      - name: Retain native runtime evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: native-runtime-${{ matrix.node }}-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/runtime-source-attestation.json
+            ${{ runner.temp }}/runtime-archive-attestation.json
+            ${{ runner.temp }}/native-runtime-proof.json
+          if-no-files-found: error

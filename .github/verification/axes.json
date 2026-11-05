@@ -1,0 +1,148 @@
+{
+  "geo": {
+    "label": "geo-local-qualifiers-followup",
+    "head": "5743a3221dd3a4b4045de95acb087d90b5e7ecaa",
+    "base": "325939550333bf9903fe163f32f7903c0d80e92f",
+    "parent": "325939550333bf9903fe163f32f7903c0d80e92f",
+    "files": {
+      "providers/_country.mjs": "cd128dffcc06766b47b9b46099ead9c838696cd2de9c914c28fe3756ea3f69b0",
+      "tests/workplace-policy.test.mjs": "3e88656c00995b3758922cc98c8d6e378e78dd41d08fff91ce46d5fdd9c288cc"
+    },
+    "incremental": [
+      "providers/_country.mjs",
+      "tests/workplace-policy.test.mjs"
+    ],
+    "focused": [
+      "tests/workplace-policy.test.mjs",
+      "tests/workplace-policy-ingestion.test.mjs",
+      "tests/scan-dayforce.test.mjs",
+      "tests/providers/_country.test.mjs",
+      "tests/providers/jobicy-workplace.test.mjs",
+      "tests/location-filter-country-slot.test.mjs",
+      "tests/location-filter-remote-fallback.test.mjs",
+      "tests/location-filter-unicode.test.mjs",
+      "tests/location-filter-strict.test.mjs",
+      "tests/validate-portals-location-filter-strict.test.mjs",
+      "tests/scan-filtered-offers-recorded.test.mjs",
+      "web/tests/lib/workplace-policy-bridge.test.mjs"
+    ],
+    "scope": "targeted-root-only",
+    "parentEvidence": "Only two incremental root paths over authoritative32593955. No fullROOT/web/type/build rerun or new result claimed."
+  },
+  "tracker": {
+    "label": "tracker-native-report-ownership",
+    "head": "b21da5ebfe6776d84635de18faa95f301ec24b13",
+    "base": "f770ec6f8f429c1132c8e949bf9e00dc1014a9de",
+    "parent": "a4b12d6498faba9dcdba44b35ab0c035184a3eb3",
+    "files": {
+      "merge-tracker.mjs": "c7644dff562e861b919ff617f0df010ac060d002a443e6980ef2c9eee479c5a4",
+      "tests/merge-tracker-cross-source-identity.test.mjs": "a3073405e0236b7e376c45c955c4f102c1c03e125bace680704afe71b642ab1e",
+      "tests/merge-tracker-notes-report-identity.test.mjs": "b80aff707ae59c24bfdcaa81f8226fbfe66596b0199d844838fed1e0338f6613",
+      "tests/merge-tracker-unkeyed-stop.test.mjs": "3d455ed9701e90bc0c845ea01bea64ea2f80e92496a2e53825ad2a9d3e79ff72"
+    },
+    "incremental": [
+      "tests/merge-tracker-notes-report-identity.test.mjs"
+    ],
+    "scope": "targeted-root-only",
+    "parentEvidence": "Published parent523 original19 checks SUCCESS. Previous5f3 fullROOT20289/1 remains FAILED and was not repeated. No new-head fullROOT/web/type/build claim."
+  },
+  "workday": {
+    "label": "native-source-and-workday-facts",
+    "head": "17e65cbeff8b6367518de97863b74381cb826941",
+    "base": "05ceb992d25c7870fc89823c88e75fcb7464b135",
+    "parent": "e9a6426561f3a54cea9edb5b114d5502765f3220",
+    "files": {
+      "browser-extract.mjs": "d62db9f495766fda2e153b4e602dadb5a54deedaf8d96e33135ed4adbe046c30",
+      "lib/update-manifest.mjs": "44c28bd0c0435b57641ac2c32f45840d4fbf14573dfd853069d99777065e6790",
+      "modes/oferta.md": "b2fd4f2b5c75a647ffae31c75e6492b0781d4bd040ac301a29a3255f3439b0d2",
+      "read-known-jd.mjs": "c928cd444a5b34f9df89ed939c246c41f8511dd801e5aa985dfbcd51e2135640",
+      "tests/browser-extract.test.mjs": "92796cef5e29c5da045821aef2cc42be4d3cecb13b60bcb7f5ad7065587e2484",
+      "tests/read-known-jd.test.mjs": "18116aaa67056a8ac4181b44914846cb11c656f4c339e8c2e95fb440911b051a",
+      "web/src/app/api/run/route.ts": "0a1b0a9fa8629c0b70f7882ce455402216e19d79e7b61e36951eff8e34be9cbc",
+      "web/src/lib/evaluation-source.mjs": "ebcfaae4b694949b624809a15557fe9ea5d8619c9c6c5d243ef9d5bbd5a19890",
+      "web/src/lib/report-persist.mjs": "ac5fd3f2cec13d7ac4dfb5b7676037eb1db8daf17860499b55fbfc9e46ffe2f5",
+      "web/src/lib/run-prompts.mjs": "fc9194cfa37938eb5276e96fbc532953ab516eba783bfbd58437560d724eddaf",
+      "web/src/lib/spawn-cli.mjs": "7026d66705a735e920d190c3004eb98f08569e36c783fa8f93fdcf08255e5a4b",
+      "web/tests/lib/evaluation-source-route.test.mjs": "675a7db45b736d34a207ecbd44d5e4470b4e4fbbe89067d16fae94aef5ff1c70",
+      "web/tests/lib/evaluation-source.test.mjs": "5d744f2889fdee33aef81b37006056d2d59efcd4ee4962d64b844679f75643f1",
+      "web/tests/lib/report-persist.test.mjs": "9ea2f53024de7138ab7adc633d608f1be4aebce3cb12b3cf1c8fc8a29972f6a1",
+      "web/tests/lib/run-prompts.test.mjs": "c6c090436e71fadac2e37eff976b1c6ad96cfffa044433a60dd01c3b20a9bdf9",
+      "web/tests/lib/spawn-cli.test.mjs": "328a04703cf07457a32d14fd4b0c9b901dd9302a53df81c7d1b41dedd1fbc283"
+    },
+    "incremental": [
+      "tests/read-known-jd.test.mjs"
+    ],
+    "scope": "full-root-web-and-emitted-functions",
+    "focused": [
+      "tests/browser-extract.test.mjs",
+      "tests/read-known-jd.test.mjs",
+      "web/tests/lib/evaluation-source.test.mjs",
+      "web/tests/lib/evaluation-source-route.test.mjs"
+    ],
+    "parentEvidence": "Parent e9 retained66 root-only source checks. This successor changes only the import-safety test convention; failed prior private fullROOT/Go build evidence is retained. Full exact-head root/web/compiled checks remain required."
+  },
+  "himalayas": {
+    "label": "himalayas-gated-current-main-union",
+    "head": "90044d487fa604c3affacb26ac61dcaa62a4356f",
+    "base": "325939550333bf9903fe163f32f7903c0d80e92f",
+    "parent": "c9093a466ea04dcc5a148c67eeeba23b37739af6",
+    "second_parent": "325939550333bf9903fe163f32f7903c0d80e92f",
+    "files": {
+      "himalayas-posting.mjs": "59abc6dc31a3c4bd44646fb6b6c82ea0f00f01353777f821a5c745b9a322356f",
+      "lib/update-manifest.mjs": "c8c791c7efefa002f26ddd75b4393a1fa4919d6023f075368d4442c5f490334a",
+      "modes/oferta.md": "c9e70d7ba4cd9ad60c9a5da2cff18098833a36075902d391852707e96a2432c7",
+      "tests/fixtures/himalayas-job.json": "15338b88c0ccb608ea335119aa41472ff98d362cbe7910cd1be7c719454ea7d2",
+      "tests/himalayas-posting.test.mjs": "761f94098fe9092200072955abe87e76beedef2ef8b313eacae1650c858029ea",
+      "web/src/lib/evaluation-access.mjs": "b7df166e256a10ed933640d8e88a6b3d41d9eb02883281ed61a541229a3142e8",
+      "web/src/lib/run-prompts.mjs": "768013fb63e5b44390f71baa097204667f96c4d6b1e21e2778aad32e64871604",
+      "web/tests/lib/evaluation-access.test.mjs": "7e6137a42daa433640a40223685e5beaefade199ed57b7ac9acb58ef8effdf1d"
+    },
+    "scope": "targeted-main-merge",
+    "unchangedFeatureFiles": [
+      "himalayas-posting.mjs",
+      "modes/oferta.md",
+      "tests/fixtures/himalayas-job.json",
+      "tests/himalayas-posting.test.mjs",
+      "web/src/lib/evaluation-access.mjs"
+    ],
+    "manualResolutionPaths": [
+      "lib/update-manifest.mjs",
+      "web/src/lib/run-prompts.mjs",
+      "web/tests/lib/evaluation-access.test.mjs"
+    ],
+    "registryMainPlus": "himalayas-posting.mjs",
+    "focused": [
+      "tests/himalayas-posting.test.mjs",
+      "web/tests/lib/evaluation-access.test.mjs",
+      "web/tests/lib/run-prompts.test.mjs",
+      "tests/mode-command-arguments.test.mjs",
+      "tests/evaluation-mode-parity.test.mjs"
+    ],
+    "parentEvidence": "Published3667 earlier originalCI allSUCCESS; prior localc909 focused103/native8. New90044 firstfocused103/native8 only. No new fullROOT/web/type/build result or parent webtree equality is claimed."
+  },
+  "archive": {
+    "label": "native-archive-inline-source-reuse",
+    "head": "7284d68e7a72108b1f974ec42804a71bb2481a08",
+    "base": "35b7c5315837478ae35316429669a954923ccd6b",
+    "parent": "1501ebec747df9c9f3f22db219c60b9e82158229",
+    "files": {
+      "archive-posting.mjs": "00c1d97804cca24fa53307dddc6fb65fb7a7fc3f1389c8c7942558f2a985f6b9",
+      "check-jd-archive.mjs": "ecb7023023b8e90a9216fbaabec5a20d6c53e51697cb5279d1934af6304ebafd",
+      "lib/evaluation-archive.mjs": "f51ca39b2dcb92c35d996518db0c3954805029c4dee64a31b857281bed32d2f1",
+      "lib/update-manifest.mjs": "816df98acb1c8ff76419739e3a5a441ce2ffe0d6e42f07a56e12fda45fa80300",
+      "persist-evaluation-report.mjs": "3d6183d73781d3966a4cdde4a2bed2eeafc58a4de6cbec732a350ab58474fedd",
+      "tests/archive-posting-non-content.test.mjs": "8290e2ba28abdc613b34c4a5cb3385649a7ea6aaae8d18d5f0e6258051cdb82d",
+      "tests/check-jd-archive-paraphrase.test.mjs": "d7c2c58634ddcbca04981d31c9fe9e66102853d06f3c587728527400baed3946",
+      "tests/evaluation-archive.test.mjs": "e6701633c2090b3708e4d2a6e26d75392982a59457c62f7ab9f4e888b5491de2",
+      "tests/persist-evaluation-report.test.mjs": "7e962a024768ea2879e54b1eec6f3bc43e96ea1e8ae3f2fec3b81530467a16da",
+      "web/tests/lib/evaluation-archive-completeness.test.mjs": "22fabcc4b8704662677857fada35ef5177cd0abe4db0b0ab9f920aaacf620ee9",
+      "web/tests/lib/report-persist.test.mjs": "958f1391c06e95f7f84e24ba4ce117d070f4c4587dfe5895ed14500a86e9f6e5"
+    },
+    "incremental": [
+      "lib/evaluation-archive.mjs",
+      "tests/evaluation-archive.test.mjs"
+    ],
+    "scope": "targeted-root-only",
+    "parentEvidence": "Affected archive56 + unchanged nativewriter11 PASS. Earliernewfixture guard-count failure retained; no new fullROOT/web/type/build claim."
+  }
+}
