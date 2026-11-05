@@ -18,9 +18,13 @@ jobs:
       matrix:
         include:
           - label: web-evaluation-archive
-            ref: 3f7cebf2f02ef895da930175397ba17a23ad0f30
+            ref: ae74a3e3e4157a6520f96e104ba06aa6f88cb046
             base: 35b7c5315837478ae35316429669a954923ccd6b
-            files: {"archive-posting.mjs":"00c1d97804cca24fa53307dddc6fb65fb7a7fc3f1389c8c7942558f2a985f6b9","check-jd-archive.mjs":"ecb7023023b8e90a9216fbaabec5a20d6c53e51697cb5279d1934af6304ebafd","lib/evaluation-archive.mjs":"6704452a4167dc152d82ecb246d7bca510a37c83d6fb227368161f368ca3f4f6","lib/update-manifest.mjs":"816df98acb1c8ff76419739e3a5a441ce2ffe0d6e42f07a56e12fda45fa80300","persist-evaluation-report.mjs":"63d57aad1a5f661cfaa31bd0ff6776e17971f0e7f8554c78800b0a609e12726f","tests/archive-posting-non-content.test.mjs":"8290e2ba28abdc613b34c4a5cb3385649a7ea6aaae8d18d5f0e6258051cdb82d","tests/check-jd-archive-paraphrase.test.mjs":"d7c2c58634ddcbca04981d31c9fe9e66102853d06f3c587728527400baed3946","tests/evaluation-archive.test.mjs":"0e3312982f4b441a24191ff666d030a721d2269749837efa76d6752ad3d11076","tests/persist-evaluation-report.test.mjs":"91381e781af72709ebfe2f0b32671c947695dfac8fd5032e5e0cf56b68d8104a","web/tests/lib/evaluation-archive-completeness.test.mjs":"22fabcc4b8704662677857fada35ef5177cd0abe4db0b0ab9f920aaacf620ee9","web/tests/lib/report-persist.test.mjs":"958f1391c06e95f7f84e24ba4ce117d070f4c4587dfe5895ed14500a86e9f6e5"}
+            files: {"archive-posting.mjs":"00c1d97804cca24fa53307dddc6fb65fb7a7fc3f1389c8c7942558f2a985f6b9","check-jd-archive.mjs":"ecb7023023b8e90a9216fbaabec5a20d6c53e51697cb5279d1934af6304ebafd","lib/evaluation-archive.mjs":"e36d19b993b512a98bfb9e71062d5a19941f972541c7cb9f3aed811d95c8f7c3","lib/update-manifest.mjs":"816df98acb1c8ff76419739e3a5a441ce2ffe0d6e42f07a56e12fda45fa80300","persist-evaluation-report.mjs":"91e6b1528a99a933aba95927f16b71a57be0723d505414b4e56c9d5ef1ec767c","tests/archive-posting-non-content.test.mjs":"8290e2ba28abdc613b34c4a5cb3385649a7ea6aaae8d18d5f0e6258051cdb82d","tests/check-jd-archive-paraphrase.test.mjs":"d7c2c58634ddcbca04981d31c9fe9e66102853d06f3c587728527400baed3946","tests/evaluation-archive.test.mjs":"17eb145da4e821d43028213fdb0afbdd1c7e14d7c64ab65c3f421f471226b5a7","tests/persist-evaluation-report.test.mjs":"91381e781af72709ebfe2f0b32671c947695dfac8fd5032e5e0cf56b68d8104a","web/tests/lib/evaluation-archive-completeness.test.mjs":"22fabcc4b8704662677857fada35ef5177cd0abe4db0b0ab9f920aaacf620ee9","web/tests/lib/report-persist.test.mjs":"958f1391c06e95f7f84e24ba4ce117d070f4c4587dfe5895ed14500a86e9f6e5"}
+          - label: tracker-employer-identity
+            ref: 3a0342e6c82d17ea1c54ba76c483e6dccb387b93
+            base: 35b7c5315837478ae35316429669a954923ccd6b
+            files: {"merge-tracker.mjs":"e20833880b14197962121ef0789627e534c4175a94619ecb8f132b88817500e9","tests/merge-tracker-cross-source-identity.test.mjs":"7590045b772f698c199d1b217a39d156d50b2803f50653edb43744428b9f23be"}
     env:
       EXPECTED_HEAD: ${{ matrix.ref }}
       EXPECTED_BASE: ${{ matrix.base }}
