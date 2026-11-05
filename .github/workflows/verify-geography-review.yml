@@ -1,0 +1,123 @@
+name: Verify workplace geography review
+
+on:
+  push:
+    branches: [codex/verify-workplace-geography-review]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linux-exact-head:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      EXPECTED_HEAD: e0ab297b6e7a04f042d7ccf97038a5c942dedc5b
+      EXPECTED_BASE: 8ac9c33aa05c64cba96750ab58b8457957006011
+      EXPECTED_FILES: '{"docs/WORKPLACE_GEOGRAPHY.md":"72a7198fccf9c1c16512fb71af092679b6425a5f5fe84e3b07bdc1d91817ca74","lib/admission-gate.mjs":"9c0535abfb517bddea1dd2e3b4c61a30f912665ab1d4563c656f287dcd455af8","providers/_country.mjs":"34c1c0be1455a5964a5a38419e84342565f95ddb2e6724c97984a6b851763176","providers/jobicy.mjs":"ed4bff0a015ddba562cf637dbce021f9d9c6a3a554510ecb933df9b71d9c5931","scan-ats-full.mjs":"975b2cacc4c2c19c99cd5ab312cf9d15dc1e8bb3ee8f3c773313a5f37db3ba7c","scan-dayforce.mjs":"c85fafe2b14dca0b6ef4c7e3a9bc6a0f799b459d6827cc4d7ee24ec94fa770e3","scan.mjs":"81fd46db668532db3edec871ea24a778175edb06313cd9273045dcb06f71426a","templates/portals.example.yml":"da79b4ce49aa787ede083bb78087f2afebc6e0ed20893ea6269c8a91192533d8","tests/fixtures/workplace-policy-board.mjs":"b2e559fb9e63ad3266fc562d3005ed29f4d50ad33196d3be5870ea627c7a2778","tests/providers/jobicy-workplace.test.mjs":"c08c4ebe11892bdb2c8f43201f004ed83cc3052eb7d8e5ffa7161095a4045ffd","tests/workplace-policy-ingestion.test.mjs":"4a31154a55946d4b363e519d6a83a4db78219a6b25de2f01d994c24f79841375","tests/workplace-policy.test.mjs":"e159f782b40ffa51aa6ad2f2b078a954c8200a31648b344dfc00319f484db94a","validate-portals.mjs":"13abd820c123c7fccb288dc275bac31463c48d88317213b1c004485db0310615","web/src/app/api/whats-new/route.ts":"610e5cd61d32fadda24d04704ff17cf16d505c555cb54781e508cbabf1b6df59","web/src/components/explore/discovery-card.tsx":"1b1b78bf76deedbc314788ec537b0c5f0876988d42aa2dbefd5beb5c85489eaf","web/src/components/explore/explore-provider.tsx":"6eacc43a015c2c7a24a535713ebaecd97047685cbded00421b8818ef39af66df","web/src/lib/core/pipeline.ts":"8b16eb0d6dcb11b14c9ec0328907c8e8da26e39ca98083ecbfa4d2bfc5cf91c7","web/src/lib/core/portals.ts":"a06c1aff5f1f71ecc7d128752689b2411780033e54f1a61868cf699a9568f488","web/src/lib/core/scan.ts":"7574338cad4f13d95746fb2fb0d3e85255f422d4d90a42fc3a340ff16b0de186","web/src/lib/core/workplace-policy.mjs":"26618d4a6411d3921d20e0ddcd904c2f328a42b1594c982dd22e996cec1c4f9a","web/src/lib/explore.ts":"8fbc2b246b95fd4106e3d61e9afda497c77273c6c9db9e495637ee9f6c8a3434","web/tests/lib/workplace-policy-bridge.test.mjs":"9d0771a2a291eb558fd79adbd791bbc14c9a5cb0c9e3c5619847d40123951fac"}'
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: e0ab297b6e7a04f042d7ccf97038a5c942dedc5b
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: '1.27'
+          cache-dependency-path: dashboard/go.sum
+      - name: Install root dependencies only
+        run: npm install --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Verify exact contribution and native deployment coverage
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import { execFileSync } from 'node:child_process';
+          import { createHash } from 'node:crypto';
+          const git = (...args) => execFileSync('git', args, { encoding: 'utf8' }).trim();
+          const head = process.env.EXPECTED_HEAD;
+          const base = process.env.EXPECTED_BASE;
+          assert.match(head, /^[a-f0-9]{40}$/);
+          assert.match(base, /^[a-f0-9]{40}$/);
+          assert.equal(git('rev-parse', 'HEAD'), head);
+          git('merge-base', '--is-ancestor', base, head);
+          git('diff', '--quiet');
+          git('diff', '--cached', '--quiet');
+          assert.equal(fs.existsSync('web/node_modules'), false);
+          const expected = JSON.parse(process.env.EXPECTED_FILES);
+          const changed = git('diff', '--name-only', base, head).split('\n').filter(Boolean).sort();
+          assert.deepEqual(changed, Object.keys(expected).sort());
+          const native = await import('./update-system.mjs');
+          const { SYSTEM_PATHS } = await import('./lib/update-manifest.mjs');
+          const committed = native.manifestSystemPathsAt(head, {
+            has: file => { try { git('cat-file', '-e', `${head}:${file}`); return true; } catch { return false; } },
+            show: file => git('show', `${head}:${file}`),
+          });
+          assert.deepEqual(committed.paths, SYSTEM_PATHS);
+          const protectedPaths = native.effectiveUserPaths(process.cwd());
+          assert.ok(Array.isArray(protectedPaths) && protectedPaths.length > 0);
+          const actual = {};
+          for (const file of changed) {
+            assert.ok(!path.isAbsolute(file) && !file.split('/').includes('..'));
+            const info = fs.lstatSync(file);
+            assert.ok(info.isFile() && !info.isSymbolicLink(), file);
+            const covered = file.startsWith('web/') || SYSTEM_PATHS.some(spec => spec.endsWith('/') ? file.startsWith(spec) : file === spec);
+            assert.ok(covered, `Not in native deployment inventory: ${file}`);
+            assert.ok(native.isSafeManifestPath(file.replace(/[\[\]]/g, ''), protectedPaths), file);
+            actual[file] = createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+            assert.equal(actual[file], expected[file], file);
+          }
+          fs.writeFileSync(path.join(process.env.RUNNER_TEMP, 'geography-source-attestation.json'), JSON.stringify({ head, files: actual }));
+          console.log(JSON.stringify({ exactHead: head, nativeVerifiedFiles: changed.length, noWebDependencies: true }));
+          NODE
+      - name: Targeted geography family before web dependencies
+        run: |
+          test ! -d web/node_modules
+          node --test --test-concurrency=4 tests/workplace-policy.test.mjs tests/workplace-policy-ingestion.test.mjs tests/scan-dayforce.test.mjs tests/providers/_country.test.mjs tests/providers/jobicy-workplace.test.mjs tests/location-filter-country-slot.test.mjs tests/location-filter-remote-fallback.test.mjs tests/location-filter-unicode.test.mjs tests/location-filter-strict.test.mjs tests/validate-portals-location-filter-strict.test.mjs tests/scan-filtered-offers-recorded.test.mjs web/tests/lib/workplace-policy-bridge.test.mjs
+      - name: Full root suite once before any web dependencies
+        run: |
+          test ! -d web/node_modules
+          node test-all.mjs --jobs 4
+      - name: Install locked web dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: web
+      - name: Full web suite
+        run: npm test
+        working-directory: web
+      - name: Web typecheck
+        run: npm run typecheck
+        working-directory: web
+      - name: Production web build
+        run: npm run build
+        working-directory: web
+      - name: Retain exact source proof after success or failure
+        if: always()
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import { execFileSync } from 'node:child_process';
+          import { createHash } from 'node:crypto';
+          const file = path.join(process.env.RUNNER_TEMP, 'geography-source-attestation.json');
+          assert.ok(fs.existsSync(file), 'No successful initial source attestation exists');
+          const snapshot = JSON.parse(fs.readFileSync(file, 'utf8'));
+          const git = (...args) => execFileSync('git', args, { encoding: 'utf8' }).trim();
+          assert.equal(git('rev-parse', 'HEAD'), snapshot.head);
+          assert.equal(snapshot.head, process.env.EXPECTED_HEAD);
+          git('diff', '--quiet');
+          git('diff', '--cached', '--quiet');
+          for (const [name, checksum] of Object.entries(snapshot.files)) {
+            const info = fs.lstatSync(name);
+            assert.ok(info.isFile() && !info.isSymbolicLink(), name);
+            assert.equal(createHash('sha256').update(fs.readFileSync(name)).digest('hex'), checksum, name);
+          }
+          console.log(JSON.stringify({ exactHead: snapshot.head, finalVerifiedSourceFiles: Object.keys(snapshot.files).length, doesNotOverrideTestOutcome: true }));
+          NODE
