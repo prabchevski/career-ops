@@ -1,7 +1,6 @@
 name: Public full-root gates and compiled continuation
 on:
-  push:
-    branches: [codex/verify-public-source-compiled-20261105]
+  workflow_dispatch:
 permissions:
   contents: read
   actions: read

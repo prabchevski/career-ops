@@ -25,7 +25,7 @@ const read = (file, cap) => {
   } finally { fs.closeSync(fd); }
 };
 const attestation = JSON.parse(read(args[3], 128 * 1024));
-assert.equal(attestation.head, '17e65cbeff8b6367518de97863b74381cb826941');
+assert.equal(attestation.head, '176d63d9eaef73b953ddb0c7dba3279d35aa9f89');
 const verifySource = () => { for (const [name, hash] of Object.entries(attestation.files)) {
   assert.ok(!path.isAbsolute(name) && !name.split('/').includes('..'));
   assert.equal(sha(read(path.join(root, name), 2 * 1024 * 1024)), hash);

@@ -19,7 +19,15 @@ assert.equal(git('rev-parse', `${axis.head}^`), axis.parent);
 git('diff', '--quiet'); git('diff', '--cached', '--quiet');
 const changed = git('diff', '--name-only', axis.base, axis.head).split('\n').filter(Boolean).sort();
 assert.deepEqual(changed, Object.keys(axis.files).sort());
-if (axis.scope === 'targeted-main-merge') {
+if (axis.scope === 'source-main-merge') {
+  assert.equal(git('rev-parse', `${axis.head}^2`), axis.second_parent);
+  assert.equal(axis.second_parent, axis.base);
+  // This unreferenced tree is reproduced from the two published parents;
+  // no merge commit/ref/index change is made by verification.
+  const automatic = git('merge-tree', '--write-tree', '--name-only', axis.parent, axis.second_parent).split('\n')[0];
+  assert.equal(automatic, axis.automaticMergeTree);
+  assert.deepEqual(git('diff', '--name-only', automatic, axis.head).split('\n').filter(Boolean).sort(), [...axis.manualResolutionPaths].sort());
+} else if (axis.scope === 'targeted-main-merge') {
   assert.equal(git('rev-parse', `${axis.head}^2`), axis.second_parent);
   assert.equal(axis.second_parent, axis.base);
   assert.deepEqual(Object.keys(axis.files).filter(p => !axis.unchangedFeatureFiles.includes(p)).sort(), [...axis.manualResolutionPaths].sort());

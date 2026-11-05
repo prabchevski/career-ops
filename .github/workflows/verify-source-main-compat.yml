@@ -1,0 +1,73 @@
+name: Verify Source current-main event contract
+on:
+  push:
+    branches: [codex/verify-source-main-compat-20261105]
+permissions:
+  contents: read
+jobs:
+  source-main:
+    name: Exact Source176 main composition full quality and emitted functions
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Preserve verification tools outside contribution checkout
+        run: |
+          cp -a .github/verification "$RUNNER_TEMP/source-main-verification"
+          echo "5ce00b1c0eda0a19f57783f13746e7dc0435d257a1da0e902dc6b6aad2cfe435  $RUNNER_TEMP/source-main-verification/compiled-workday-proof.mjs" | sha256sum --check
+      - name: Check out exact compatibility successor
+        id: source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 176d63d9eaef73b953ddb0c7dba3279d35aa9f89
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - name: Install declared root dependencies only
+        run: npm install --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Attest all16 paths and pure-test delta over automatic main merge
+        run: node "$RUNNER_TEMP/source-main-verification/attest-source.mjs" before workday "$RUNNER_TEMP/source-main-verification/axes.json" "$RUNNER_TEMP/source-main-attestation.json"
+      - name: First full root on the new composition before web dependencies
+        run: |
+          test ! -d web/node_modules
+          node test-all.mjs --jobs 1
+      - name: Install locked web dependencies
+        working-directory: web
+        run: npm ci --no-audit --no-fund
+      - name: Full web suite on the new composition
+        working-directory: web
+        run: npm test
+      - name: Typecheck the new composition
+        working-directory: web
+        run: npm run typecheck
+      - name: Fresh production build
+        id: build
+        working-directory: web
+        run: npm run build
+      - name: Execute actual emitted reader and adapter functions
+        id: compiled
+        timeout-minutes: 2
+        run: timeout --signal=TERM --kill-after=5s 45s node "$RUNNER_TEMP/source-main-verification/compiled-workday-proof.mjs" --root "$GITHUB_WORKSPACE" --attestation "$RUNNER_TEMP/source-main-attestation.json" --proof "$RUNNER_TEMP/source-main-compiled-proof.json" --variant public
+      - name: Retain only bounded generated code on compiled failure
+        if: failure() && steps.build.outcome == 'success' && steps.compiled.outcome == 'failure'
+        run: node "$RUNNER_TEMP/source-main-verification/capture-compiled-failure.mjs" --root "$GITHUB_WORKSPACE" --attestation "$RUNNER_TEMP/source-main-attestation.json" --out "$RUNNER_TEMP/source-main-failure-code"
+      - name: Re-attest source and native inventory even after failure
+        if: always() && steps.source.outcome == 'success'
+        run: node "$RUNNER_TEMP/source-main-verification/attest-source.mjs" after workday "$RUNNER_TEMP/source-main-verification/axes.json" "$RUNNER_TEMP/source-main-attestation.json"
+      - name: Preserve actual new-head quality proof without re-running other axes
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: source-main-compat-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/source-main-attestation.json
+            ${{ runner.temp }}/source-main-compiled-proof.json
+            ${{ runner.temp }}/source-main-failure-code/
+          if-no-files-found: error
