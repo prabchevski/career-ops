@@ -1,137 +1,32 @@
 {
   "geo": {
-    "head": "a795b7e92a8e4ea2ed6d9dac309994438ccb71d4",
+    "head": "aecf1c13f74adb4ea82598e9ff360da0bf1c7ffc",
     "base": "325939550333bf9903fe163f32f7903c0d80e92f",
-    "parent": "5743a3221dd3a4b4045de95acb087d90b5e7ecaa",
+    "parent": "a795b7e92a8e4ea2ed6d9dac309994438ccb71d4",
     "scope": "targeted-root-only",
     "incremental": [
       "providers/_country.mjs",
       "tests/workplace-policy.test.mjs"
     ],
     "files": {
-      "providers/_country.mjs": "41ff10d4a9e683a3407b9f1fd57a7faa61d5f43ca00a9178c1f85808c4b9ff26",
-      "tests/workplace-policy.test.mjs": "5fac2e3dc76016cfaf78b4bb786fc85fb5dcf3607cfc7847156f123cf33deed3"
+      "providers/_country.mjs": "ac2a56125085fbe31b24d374027055a1826239aff05a515a3a393d1f9fc670aa",
+      "tests/workplace-policy.test.mjs": "49431c6452d5da3d2af120354c2746cba53aebe33426e704401a1b77d4047a2c"
     }
   },
   "tracker": {
-    "head": "0c30cfde8785e8617e550e94f9200d40c23dc8b0",
+    "head": "d86c112c8be1310096332bf4510fc742d533df39",
     "base": "f770ec6f8f429c1132c8e949bf9e00dc1014a9de",
-    "parent": "b21da5ebfe6776d84635de18faa95f301ec24b13",
+    "parent": "0c30cfde8785e8617e550e94f9200d40c23dc8b0",
     "scope": "targeted-root-only",
     "incremental": [
       "merge-tracker.mjs",
-      "tests/merge-tracker-cross-source-identity.test.mjs"
+      "tests/merge-tracker-notes-report-identity.test.mjs"
     ],
     "files": {
-      "merge-tracker.mjs": "6c495d34eadb3d62d7702552ad5499b6e8850ac8194978c54a0ff6d5b26c28ed",
+      "merge-tracker.mjs": "d38c073108198f07cbc9bb381b48ce10ac434b6f7fed3d3d8e99ac57fbf9f4e9",
       "tests/merge-tracker-cross-source-identity.test.mjs": "4670d79e72c7071a13d914dd87fe432c24e916668dd25e4720f7b5be0335a7b9",
-      "tests/merge-tracker-notes-report-identity.test.mjs": "b80aff707ae59c24bfdcaa81f8226fbfe66596b0199d844838fed1e0338f6613",
+      "tests/merge-tracker-notes-report-identity.test.mjs": "26fe192f2ee0a7cc6772a55a7eda9ea57e94ccd0022d2c5daecea59b8fb121a8",
       "tests/merge-tracker-unkeyed-stop.test.mjs": "3d455ed9701e90bc0c845ea01bea64ea2f80e92496a2e53825ad2a9d3e79ff72"
     }
-  },
-  "workday": {
-    "head": "86eea1d8695816d0ecddfbe2ddf92cd1a3b9c809",
-    "base": "cd3793734fcd57693ddd97a20ccf0d3298b7d47e",
-    "parent": "176d63d9eaef73b953ddb0c7dba3279d35aa9f89",
-    "scope": "source-main-merge-parity",
-    "mergeParent": "176d63d9eaef73b953ddb0c7dba3279d35aa9f89",
-    "originalFeatureParent": "17e65cbeff8b6367518de97863b74381cb826941",
-    "second_parent": "cd3793734fcd57693ddd97a20ccf0d3298b7d47e",
-    "automaticMergeTree": "0a2d63c5a16ffe66916f743f94f39da3d8e6eb4f",
-    "manualResolutionPaths": [
-      "web/tests/lib/evaluation-source-route.test.mjs",
-      "web/tests/lib/evaluation-source.test.mjs"
-    ],
-    "incremental": [
-      "web/tests/lib/evaluation-source.test.mjs"
-    ],
-    "files": {
-      "browser-extract.mjs": "d62db9f495766fda2e153b4e602dadb5a54deedaf8d96e33135ed4adbe046c30",
-      "lib/update-manifest.mjs": "5fe3c56a9c400ec84d425ea23782c2a40c24ff8fa2dc96cbb24c302780dc7053",
-      "modes/oferta.md": "b2fd4f2b5c75a647ffae31c75e6492b0781d4bd040ac301a29a3255f3439b0d2",
-      "read-known-jd.mjs": "c928cd444a5b34f9df89ed939c246c41f8511dd801e5aa985dfbcd51e2135640",
-      "tests/browser-extract.test.mjs": "92796cef5e29c5da045821aef2cc42be4d3cecb13b60bcb7f5ad7065587e2484",
-      "tests/read-known-jd.test.mjs": "18116aaa67056a8ac4181b44914846cb11c656f4c339e8c2e95fb440911b051a",
-      "web/src/app/api/run/route.ts": "24afa2f7da969b7bf331be0ce3813241cd5c91764bb6ed105416ae8f44d062ca",
-      "web/src/lib/evaluation-source.mjs": "ebcfaae4b694949b624809a15557fe9ea5d8619c9c6c5d243ef9d5bbd5a19890",
-      "web/src/lib/report-persist.mjs": "026d92d32621d1240c4bff3f51a7df12a422e2cb5ee49b5871fa94c9da2521f9",
-      "web/src/lib/run-prompts.mjs": "48f8243bb1a28e2872aa4cf328da7159609a45c95447b235f7ffbc6bff1996f1",
-      "web/src/lib/spawn-cli.mjs": "7026d66705a735e920d190c3004eb98f08569e36c783fa8f93fdcf08255e5a4b",
-      "web/tests/lib/evaluation-source-route.test.mjs": "e67f5c3424f2a43219c95fc46c4412cbabbd7bf11ff4d73c162a57c99e823d1e",
-      "web/tests/lib/evaluation-source.test.mjs": "86afd09b83872e950d7218d92341c9ad87cbccf48c5af248e6dea8dd11f09fae",
-      "web/tests/lib/report-persist.test.mjs": "9ea2f53024de7138ab7adc633d608f1be4aebce3cb12b3cf1c8fc8a29972f6a1",
-      "web/tests/lib/run-prompts.test.mjs": "c6c090436e71fadac2e37eff976b1c6ad96cfffa044433a60dd01c3b20a9bdf9",
-      "web/tests/lib/spawn-cli.test.mjs": "328a04703cf07457a32d14fd4b0c9b901dd9302a53df81c7d1b41dedd1fbc283"
-    }
-  },
-  "himalayas": {
-    "label": "himalayas-standalone-reader-only",
-    "head": "3d6f3d92450887694511298f3313f9311a49e6dc",
-    "base": "325939550333bf9903fe163f32f7903c0d80e92f",
-    "parent": "90044d487fa604c3affacb26ac61dcaa62a4356f",
-    "scope": "helper-only-main-scope",
-    "files": {
-      "himalayas-posting.mjs": "59abc6dc31a3c4bd44646fb6b6c82ea0f00f01353777f821a5c745b9a322356f",
-      "lib/update-manifest.mjs": "c8c791c7efefa002f26ddd75b4393a1fa4919d6023f075368d4442c5f490334a",
-      "tests/fixtures/himalayas-job.json": "15338b88c0ccb608ea335119aa41472ff98d362cbe7910cd1be7c719454ea7d2",
-      "tests/himalayas-posting.test.mjs": "761f94098fe9092200072955abe87e76beedef2ef8b313eacae1650c858029ea"
-    },
-    "incremental": [
-      "modes/oferta.md",
-      "web/src/lib/evaluation-access.mjs",
-      "web/src/lib/run-prompts.mjs",
-      "web/tests/lib/evaluation-access.test.mjs"
-    ],
-    "helperBytesEqualParent": true,
-    "requireTreesEqualBase": [
-      "web",
-      "modes"
-    ],
-    "requirePackagesEqualBase": [
-      "package.json",
-      "web/package.json",
-      "web/package-lock.json"
-    ],
-    "registryMainPlus": "himalayas-posting.mjs",
-    "focused": [
-      "tests/himalayas-posting.test.mjs",
-      "tests/main-guard-convention.test.mjs",
-      "tests/help-flag-handled.test.mjs",
-      "tests/update-manifest.test.mjs"
-    ],
-    "parentEvidence": "Owner requested scope split onpublished3667. New3d6f helper-only retains exact4alreadyreviewed bytes, allnon-helperpaths equalmain325, root-only53/native4PASS. Prior900global103 result is historical only; no newfullROOT/web/type/build claim.",
-    "proof": "pr6501-helper-only-final-proof.json",
-    "proofSha256": "714513fff7d0b217484a0294d7dc48bd8a38303305b031fdffdf926b8f363eee",
-    "publicWrites": false,
-    "helperPathsEqualParent": [
-      "himalayas-posting.mjs",
-      "lib/update-manifest.mjs",
-      "tests/fixtures/himalayas-job.json",
-      "tests/himalayas-posting.test.mjs"
-    ]
-  },
-  "archive": {
-    "label": "archive-main-document-request-identity",
-    "head": "58a2578096bd369ac95f190c6183e30b3f9885fe",
-    "base": "35b7c5315837478ae35316429669a954923ccd6b",
-    "parent": "7284d68e7a72108b1f974ec42804a71bb2481a08",
-    "files": {
-      "archive-posting.mjs": "39b5dba87484d7f5d9f911edab4fdfd89498b2f01784525bc5786b85cacefcbc",
-      "check-jd-archive.mjs": "ecb7023023b8e90a9216fbaabec5a20d6c53e51697cb5279d1934af6304ebafd",
-      "lib/evaluation-archive.mjs": "f51ca39b2dcb92c35d996518db0c3954805029c4dee64a31b857281bed32d2f1",
-      "lib/update-manifest.mjs": "816df98acb1c8ff76419739e3a5a441ce2ffe0d6e42f07a56e12fda45fa80300",
-      "persist-evaluation-report.mjs": "3d6183d73781d3966a4cdde4a2bed2eeafc58a4de6cbec732a350ab58474fedd",
-      "tests/archive-posting-non-content.test.mjs": "3538463def6ae82d1e4a3773116efa3974b6ff5eb5b893875ddfbfa441f4f639",
-      "tests/check-jd-archive-paraphrase.test.mjs": "d7c2c58634ddcbca04981d31c9fe9e66102853d06f3c587728527400baed3946",
-      "tests/evaluation-archive.test.mjs": "e6701633c2090b3708e4d2a6e26d75392982a59457c62f7ab9f4e888b5491de2",
-      "tests/persist-evaluation-report.test.mjs": "7e962a024768ea2879e54b1eec6f3bc43e96ea1e8ae3f2fec3b81530467a16da",
-      "web/tests/lib/evaluation-archive-completeness.test.mjs": "22fabcc4b8704662677857fada35ef5177cd0abe4db0b0ab9f920aaacf620ee9",
-      "web/tests/lib/report-persist.test.mjs": "958f1391c06e95f7f84e24ba4ce117d070f4c4587dfe5895ed14500a86e9f6e5"
-    },
-    "incremental": [
-      "archive-posting.mjs",
-      "tests/archive-posting-non-content.test.mjs"
-    ],
-    "scope": "targeted-root-only"
   }
 }

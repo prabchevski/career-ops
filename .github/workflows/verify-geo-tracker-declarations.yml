@@ -1,0 +1,57 @@
+name: Verify Geo and tracker declaration guards
+on:
+  push:
+    branches: [codex/verify-geo-tracker-declarations-20261105]
+permissions:
+  contents: read
+jobs:
+  first-full-roots:
+    name: First full root on new ${{ matrix.axis }} successor
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - axis: geo
+            head: aecf1c13f74adb4ea82598e9ff360da0bf1c7ffc
+          - axis: tracker
+            head: d86c112c8be1310096332bf4510fc742d533df39
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Preserve exact verification tools outside contribution checkout
+        run: cp -a .github/verification "$RUNNER_TEMP/new-root-verification"
+      - name: Check out exact new root successor
+        id: candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ matrix.head }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - name: Install declared root dependencies only
+        run: npm install --ignore-scripts --no-package-lock --no-audit --no-fund
+      - name: Attest all PR paths and exact immediate-parent delta
+        run: node "$RUNNER_TEMP/new-root-verification/attest-source.mjs" before "${{ matrix.axis }}" "$RUNNER_TEMP/new-root-verification/axes.json" "$RUNNER_TEMP/new-root-${{ matrix.axis }}.json"
+      - name: First full root on this new head without web dependencies
+        run: |
+          test ! -d web/node_modules
+          node test-all.mjs --jobs 1
+      - name: Re-attest exact source and native inventory even after failure
+        if: always() && steps.candidate.outcome == 'success'
+        run: node "$RUNNER_TEMP/new-root-verification/attest-source.mjs" after "${{ matrix.axis }}" "$RUNNER_TEMP/new-root-verification/axes.json" "$RUNNER_TEMP/new-root-${{ matrix.axis }}.json"
+      - name: Retain actual first new-head root proof
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: new-root-${{ matrix.axis }}-${{ github.sha }}
+          path: ${{ runner.temp }}/new-root-${{ matrix.axis }}.json
+          if-no-files-found: error
+
