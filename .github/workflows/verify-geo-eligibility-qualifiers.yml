@@ -1,4 +1,4 @@
-name: Verify explicit geography eligibility qualifiers
+name: Verify geography qualifiers and literal archive guards
 on:
   push:
     branches: [codex/verify-geo-eligibility-qualifiers-20261106]
@@ -15,6 +15,8 @@ jobs:
         include:
           - axis: geo
             head: dbc620eb260aa1e196fd0ef50fcf261cf33e3ebd
+          - axis: archive
+            head: 2e5358458faba196bde76cd4a75d5c749d7233b7
     env:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
       NEXT_TELEMETRY_DISABLED: '1'

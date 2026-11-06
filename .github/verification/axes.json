@@ -12,5 +12,28 @@
       "providers/_country.mjs": "0c1840b9cdeb36a232d0e0aa59f923c449c69bc1ea1e5d3d7a579185656eab97",
       "tests/workplace-policy.test.mjs": "4664e74f3d365ebab965339b18ea60771bd100ca91f6c49b6726631d0afb4b0a"
     }
+  },
+  "archive": {
+    "head": "2e5358458faba196bde76cd4a75d5c749d7233b7",
+    "base": "35b7c5315837478ae35316429669a954923ccd6b",
+    "parent": "76365651c06f78d93edab55f3e0809b96d7091b8",
+    "incremental": [
+      "lib/evaluation-archive.mjs",
+      "tests/evaluation-archive.test.mjs"
+    ],
+    "files": {
+      "archive-posting.mjs": "39b5dba87484d7f5d9f911edab4fdfd89498b2f01784525bc5786b85cacefcbc",
+      "check-jd-archive.mjs": "ecb7023023b8e90a9216fbaabec5a20d6c53e51697cb5279d1934af6304ebafd",
+      "lib/evaluation-archive.mjs": "e9f7622e5076482d3020ef723023786d579c94fe0b190011870e2a784fa9806d",
+      "lib/update-manifest.mjs": "816df98acb1c8ff76419739e3a5a441ce2ffe0d6e42f07a56e12fda45fa80300",
+      "persist-evaluation-report.mjs": "3d6183d73781d3966a4cdde4a2bed2eeafc58a4de6cbec732a350ab58474fedd",
+      "tests/archive-posting-non-content.test.mjs": "3538463def6ae82d1e4a3773116efa3974b6ff5eb5b893875ddfbfa441f4f639",
+      "tests/check-jd-archive-paraphrase.test.mjs": "d7c2c58634ddcbca04981d31c9fe9e66102853d06f3c587728527400baed3946",
+      "tests/evaluation-archive.test.mjs": "16ee12634c5e93c187ba7b53c5559f7f99359e6ecbf966ea05d2303e201a8279",
+      "tests/persist-evaluation-report.test.mjs": "7e962a024768ea2879e54b1eec6f3bc43e96ea1e8ae3f2fec3b81530467a16da",
+      "web/tests/lib/evaluation-archive-completeness.test.mjs": "22fabcc4b8704662677857fada35ef5177cd0abe4db0b0ab9f920aaacf620ee9",
+      "web/tests/lib/report-persist.test.mjs": "958f1391c06e95f7f84e24ba4ce117d070f4c4587dfe5895ed14500a86e9f6e5"
+    },
+    "scope": "targeted-root-only"
   }
 }
