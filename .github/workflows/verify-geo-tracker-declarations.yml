@@ -1,4 +1,4 @@
-name: Verify Geo and tracker declaration guards
+name: Verify latest declaration and archive guards
 on:
   push:
     branches: [codex/verify-geo-tracker-declarations-20261105]
@@ -17,6 +17,8 @@ jobs:
             head: aecf1c13f74adb4ea82598e9ff360da0bf1c7ffc
           - axis: tracker
             head: d86c112c8be1310096332bf4510fc742d533df39
+          - axis: archive
+            head: 76365651c06f78d93edab55f3e0809b96d7091b8
     env:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
       NEXT_TELEMETRY_DISABLED: '1'

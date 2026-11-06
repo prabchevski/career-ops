@@ -28,5 +28,28 @@
       "tests/merge-tracker-notes-report-identity.test.mjs": "26fe192f2ee0a7cc6772a55a7eda9ea57e94ccd0022d2c5daecea59b8fb121a8",
       "tests/merge-tracker-unkeyed-stop.test.mjs": "3d455ed9701e90bc0c845ea01bea64ea2f80e92496a2e53825ad2a9d3e79ff72"
     }
+  },
+  "archive": {
+    "head": "76365651c06f78d93edab55f3e0809b96d7091b8",
+    "base": "35b7c5315837478ae35316429669a954923ccd6b",
+    "parent": "58a2578096bd369ac95f190c6183e30b3f9885fe",
+    "incremental": [
+      "lib/evaluation-archive.mjs",
+      "tests/evaluation-archive.test.mjs"
+    ],
+    "files": {
+      "archive-posting.mjs": "39b5dba87484d7f5d9f911edab4fdfd89498b2f01784525bc5786b85cacefcbc",
+      "check-jd-archive.mjs": "ecb7023023b8e90a9216fbaabec5a20d6c53e51697cb5279d1934af6304ebafd",
+      "lib/evaluation-archive.mjs": "99c9cfdc833e77426640433ce1e5320383b0410bbaa80169cf45150db13fc383",
+      "lib/update-manifest.mjs": "816df98acb1c8ff76419739e3a5a441ce2ffe0d6e42f07a56e12fda45fa80300",
+      "persist-evaluation-report.mjs": "3d6183d73781d3966a4cdde4a2bed2eeafc58a4de6cbec732a350ab58474fedd",
+      "tests/archive-posting-non-content.test.mjs": "3538463def6ae82d1e4a3773116efa3974b6ff5eb5b893875ddfbfa441f4f639",
+      "tests/check-jd-archive-paraphrase.test.mjs": "d7c2c58634ddcbca04981d31c9fe9e66102853d06f3c587728527400baed3946",
+      "tests/evaluation-archive.test.mjs": "b86711ea84fb09773c4c744f0951c0d156b09011e740d8f0c6981a09eb28674e",
+      "tests/persist-evaluation-report.test.mjs": "7e962a024768ea2879e54b1eec6f3bc43e96ea1e8ae3f2fec3b81530467a16da",
+      "web/tests/lib/evaluation-archive-completeness.test.mjs": "22fabcc4b8704662677857fada35ef5177cd0abe4db0b0ab9f920aaacf620ee9",
+      "web/tests/lib/report-persist.test.mjs": "958f1391c06e95f7f84e24ba4ce117d070f4c4587dfe5895ed14500a86e9f6e5"
+    },
+    "scope": "targeted-root-only"
   }
 }
