@@ -1,55 +1,16 @@
 {
   "geo": {
-    "head": "aecf1c13f74adb4ea82598e9ff360da0bf1c7ffc",
+    "head": "dbc620eb260aa1e196fd0ef50fcf261cf33e3ebd",
     "base": "325939550333bf9903fe163f32f7903c0d80e92f",
-    "parent": "a795b7e92a8e4ea2ed6d9dac309994438ccb71d4",
+    "parent": "aecf1c13f74adb4ea82598e9ff360da0bf1c7ffc",
     "scope": "targeted-root-only",
     "incremental": [
       "providers/_country.mjs",
       "tests/workplace-policy.test.mjs"
     ],
     "files": {
-      "providers/_country.mjs": "ac2a56125085fbe31b24d374027055a1826239aff05a515a3a393d1f9fc670aa",
-      "tests/workplace-policy.test.mjs": "49431c6452d5da3d2af120354c2746cba53aebe33426e704401a1b77d4047a2c"
+      "providers/_country.mjs": "0c1840b9cdeb36a232d0e0aa59f923c449c69bc1ea1e5d3d7a579185656eab97",
+      "tests/workplace-policy.test.mjs": "4664e74f3d365ebab965339b18ea60771bd100ca91f6c49b6726631d0afb4b0a"
     }
-  },
-  "tracker": {
-    "head": "d86c112c8be1310096332bf4510fc742d533df39",
-    "base": "f770ec6f8f429c1132c8e949bf9e00dc1014a9de",
-    "parent": "0c30cfde8785e8617e550e94f9200d40c23dc8b0",
-    "scope": "targeted-root-only",
-    "incremental": [
-      "merge-tracker.mjs",
-      "tests/merge-tracker-notes-report-identity.test.mjs"
-    ],
-    "files": {
-      "merge-tracker.mjs": "d38c073108198f07cbc9bb381b48ce10ac434b6f7fed3d3d8e99ac57fbf9f4e9",
-      "tests/merge-tracker-cross-source-identity.test.mjs": "4670d79e72c7071a13d914dd87fe432c24e916668dd25e4720f7b5be0335a7b9",
-      "tests/merge-tracker-notes-report-identity.test.mjs": "26fe192f2ee0a7cc6772a55a7eda9ea57e94ccd0022d2c5daecea59b8fb121a8",
-      "tests/merge-tracker-unkeyed-stop.test.mjs": "3d455ed9701e90bc0c845ea01bea64ea2f80e92496a2e53825ad2a9d3e79ff72"
-    }
-  },
-  "archive": {
-    "head": "76365651c06f78d93edab55f3e0809b96d7091b8",
-    "base": "35b7c5315837478ae35316429669a954923ccd6b",
-    "parent": "58a2578096bd369ac95f190c6183e30b3f9885fe",
-    "incremental": [
-      "lib/evaluation-archive.mjs",
-      "tests/evaluation-archive.test.mjs"
-    ],
-    "files": {
-      "archive-posting.mjs": "39b5dba87484d7f5d9f911edab4fdfd89498b2f01784525bc5786b85cacefcbc",
-      "check-jd-archive.mjs": "ecb7023023b8e90a9216fbaabec5a20d6c53e51697cb5279d1934af6304ebafd",
-      "lib/evaluation-archive.mjs": "99c9cfdc833e77426640433ce1e5320383b0410bbaa80169cf45150db13fc383",
-      "lib/update-manifest.mjs": "816df98acb1c8ff76419739e3a5a441ce2ffe0d6e42f07a56e12fda45fa80300",
-      "persist-evaluation-report.mjs": "3d6183d73781d3966a4cdde4a2bed2eeafc58a4de6cbec732a350ab58474fedd",
-      "tests/archive-posting-non-content.test.mjs": "3538463def6ae82d1e4a3773116efa3974b6ff5eb5b893875ddfbfa441f4f639",
-      "tests/check-jd-archive-paraphrase.test.mjs": "d7c2c58634ddcbca04981d31c9fe9e66102853d06f3c587728527400baed3946",
-      "tests/evaluation-archive.test.mjs": "b86711ea84fb09773c4c744f0951c0d156b09011e740d8f0c6981a09eb28674e",
-      "tests/persist-evaluation-report.test.mjs": "7e962a024768ea2879e54b1eec6f3bc43e96ea1e8ae3f2fec3b81530467a16da",
-      "web/tests/lib/evaluation-archive-completeness.test.mjs": "22fabcc4b8704662677857fada35ef5177cd0abe4db0b0ab9f920aaacf620ee9",
-      "web/tests/lib/report-persist.test.mjs": "958f1391c06e95f7f84e24ba4ce117d070f4c4587dfe5895ed14500a86e9f6e5"
-    },
-    "scope": "targeted-root-only"
   }
 }
